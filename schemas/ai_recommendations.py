@@ -1,36 +1,27 @@
 from typing import Union, List, Dict, Any
 from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_core.output_parsers import PydanticOutputParser
+from langchain.output_parsers import RetryWithErrorOutputParser
 
-class FertilizerUse(BaseModel):
-    """Use this data model to provide specific fertilizer use recommendations"""
-    fertilizers: List[Dict[str, Any]] = Field(..., title="Fertilizers", description="Specific fertilizers with type, nutrient composition, and application rates")
-    application_method: str = Field(..., title="Application Method", description="Specific method of fertilizer application")
-    application_timing: List[Dict[str, Any]] = Field(..., title="Application Timing", description="Timing of fertilizer application with crop stage and rate")
-    nutrient_role: Dict[str, str] = Field(..., title="Nutrient Role", description="Role of each nutrient in plant growth and development")
+class RecommendationsSchema(BaseModel):
 
-class PestControl(BaseModel):
-    """Use this data model to provide specific pest control measures"""
-    scouting: Dict[str, Any] = Field(..., title="Scouting", description="Specific scouting methods and frequency for pest monitoring")
-    resistant_varieties: List[str] = Field(..., title="Resistant Varieties", description="Specific pest-resistant crop varieties to plant")
-    biological_control: List[Dict[str, Any]] = Field(..., title="biological", description="Specific biological control methods, organisms, and application rates/timing")
-    chemical_control: List[Dict[str, Any]] = Field(..., title="chemical control", description="Specific organic insecticides, application rates, and timing")
+    crop_management: List[str] = Field(default=[], title="Crop Management", description="4 tailored crop management practices")
+    fertilizers: Dict[str, Any] = Field(default={}, title="Fertilizers", description="Specific fertilizer type, nutrient composition, and application rates")
+    application_method: str = Field(default="", title="Application Method", description="Specific method of fertilizer application")
+    application_timing: Dict[str, Any] = Field(default={}, title="Application Timing", description="Timing of fertilizer application with crop stage and rate")
+    nutrient_role: Dict[str, str] = Field(default={}, title="Nutrient Role", description="Role of each nutrient in plant growth and development")
+    pest_control_measures: List[str] = Field(default=[{}], title="Pest Control Measures", description="Specific pest control measures including pesticides, application rates, and timing")
+    disease_prevention: List[str] = Field(default=[], title="disease prevention", description="Specific disease prevention measures")
+    fungicides: Dict[str, Any] = Field(default={}, title="fungicide", description="fungicide, application rates, and timing")
+    weeds_control_measure: List[str] = Field(default=[], title="Weeds Control Measure", description="Specific weed control measures, including weedicide with application rate and timing")
+    # herbicides: List[str] = Field(..., title="Herbicide", description="Specific herbicides with application rates and timing")
+    soil_health: List[str] = Field(default=[], title="Soil Health", description="Specific soil health practices")
+    weather_adaptation: List[str] = Field(default=[], title="Weather Adaptation", description="Specific weather adaptation practices")
+    
 
-class DiseaseControl(BaseModel):
-    """Use this data model to provide specific disease control measures"""
-    prevention: List[Dict[str, Any]] = Field(..., title="disease_prevention", description="Specific disease prevention measures with details")
-    fungicides: List[Dict[str, Any]] = Field(..., title="fungicides", description="Specific fungicides, application rates, and timing")
-
-class WeedSuppression(BaseModel):
-    weeds_control_measure: List[Dict[str, Any]] = Field(..., title="Weeds Control Measure", description="Specific weed control measures with details")
-    herbicides: List[str] = Field(..., title="Herbicides", description="Specific herbicides with application rates and timing")
-
-class GeneralRecommendations(BaseModel):
-    """Use this data model to provide tailored recommendations for crop management, soil health, weather adaptation, and sustainable methods"""
-    crop_management: List[str] = Field(..., title="Crop Management", description="At least 3 specific crop management practices")
-    # fertilizer_use: FertilizerUse
-    # pest_control: PestControl
-    # disease_control: DiseaseControl
-    # weed_suppression: WeedSuppression
-    soil_health: List[str] = Field(..., title="Soil Health", description="At least 3 Specific soil health practices")
-    weather_adaptation: List[str] = Field(..., title="Weather Adaptation", description="At least 3 Specific weather adaptation practices")
-    sustainable_methods: List[str] = Field(..., title="Sustainable Methods", description="At least 3 Specific sustainable farming practices")
+    @classmethod
+    def get_format_instructions(cls):
+        output_parser = PydanticOutputParser(pydantic_object=cls)
+        format_instructions = output_parser.get_format_instructions()
+        return output_parser, format_instructions
+    
