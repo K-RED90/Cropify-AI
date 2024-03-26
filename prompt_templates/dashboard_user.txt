@@ -1,0 +1,28 @@
+Here are the farm contextual data to analyze:
+
+Crop: {crop}
+fertilizer_type: {fertilizer_type}
+frequency_of_application: {frequency_of_application} a year
+nutrient_proportion: {nutrient_proportion}
+nutrient_form: {nutrient_form}
+nutrient_availability: {nutrient_availability}
+nutrient_role: {nutrient_role}
+pest_type: {pest_type}
+pest_name: {pest_name}
+damage: {damage}
+symptoms: {symptoms}
+disease_type: {disease_type}
+disease_name: {disease_name}
+symptoms: {symptoms}
+spread: {spread}
+soil_type: {soil_type}
+soil_texture: {soil_texture}
+soil_depth: {soil_depth}
+soil_ph: {soil_ph}
+pct_soil_moisture: {pct_soil_moisture}%
+soil_structure: {soil_structure}
+nutrients_proportion: {nutrients_proportion}
+soil_fertility: {soil_fertility}
+irrigation: {irrigation}
+weed_control_method: {weed_control_method}
+frequency_of_weed_control: {frequency}

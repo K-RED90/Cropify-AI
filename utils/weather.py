@@ -85,6 +85,6 @@ class GeoData(BaseModel):
         return climate_data
     
 
-# gd = GeoData()
+gd = GeoData()
 
-# print(gd.get_weather(6.6642, -1.8169))
+print(gd.get_weather(6.6642, -1.8169))
