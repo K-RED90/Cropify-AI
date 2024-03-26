@@ -1,0 +1,29 @@
+{
+    "Crop": "Corn",
+    "soil_type": "Sandy Loam",
+    "soil_texture": "Fine",
+    "soil_ph": 6.2,
+    "pct_soil_moisture": 18,
+    "nutrients_proportion": {
+        "N": 0.12,
+        "P": 0.08,
+        "K": 0.15
+    },
+    "soil_fertility": "Moderate",
+    "irrigation": "Center Pivot",
+    "fertilizer_type": "Granular",
+    "frequency_of_application": "2 per year",
+    "pest_type": "Insect",
+    "pest_name": "European Corn Borer",
+    "disease_name": "Northern Corn Leaf Blight",
+    "weed_control_method": "Chemical",
+    "frequency_of_weed_control": "3 times a year",
+    "wind": "8 m/s",
+    "humidity": "65%",
+    "temperature": "28°C",
+    "status": "Partly Cloudy",
+    "rain": "0.2 inches",
+    "heat_index": "32°C",
+    "clouds": "40%",
+    "pressure": "1018 hpa"
+}
