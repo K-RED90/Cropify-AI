@@ -11,7 +11,6 @@
     },
     "soil_fertility": "Moderate",
     "irrigation": "Center Pivot",
-    "fertilizer_type": "Granular",
     "frequency_of_application": "2 per year",
     "pest_type": "Insect",
     "pest_name": "European Corn Borer",
@@ -21,9 +20,6 @@
     "wind": "8 m/s",
     "humidity": "65%",
     "temperature": "28°C",
-    "status": "Partly Cloudy",
-    "rain": "0.2 inches",
     "heat_index": "32°C",
-    "clouds": "40%",
     "pressure": "1018 hpa"
 }

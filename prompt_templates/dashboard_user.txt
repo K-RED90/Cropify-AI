@@ -1,27 +1,28 @@
-Here are the farm contextual data to analyze:
-Crop: {Crop}
-soil_type: {soil_type}
-soil_texture: {soil_texture}
-soil_ph: {soil_ph}
-pct_soil_moisture: {pct_soil_moisture}%
-nutrients_proportion: {nutrients_proportion}
-soil_fertility: {soil_fertility}
-irrigation: {irrigation}
-fertilizer_type: {fertilizer_type}
-frequency_of_application: {frequency_of_application} a year
-pest_type: {pest_type}
-pest_name: {pest_name}
-disease_name: {disease_name}
-weed_control_method: {weed_control_method}
-frequency_of_weed_control: {frequency_of_weed_control} a year
+Analyze the data in tripple backticks and provide tailored recommendations based on the system instructions.:
 
+```
+Crop grown: {Crop}
+
+------------------------------------------------------
 
 Climate Data:
 wind: {wind}
 humidity: {humidity}
 temperature: {temperature}
-status: {status}
-rain: {rain}
 heat_index: {heat_index}
-clouds: {clouds}
 pressure: {pressure}
+
+---------------------------------------------------------
+
+soil type: {soil_type}
+soil texture: {soil_texture}
+soil ph: {soil_ph}
+percentage of soil moisture: {pct_soil_moisture}
+soil fertility: {soil_fertility}
+nutrients proportion in fertility: {nutrients_proportion}
+frequency of_fertilizer application: {frequency_of_application} a year
+pest name: {pest_name}
+disease name: {disease_name}
+weed control method: {weed_control_method}
+frequency of weed control: {frequency_of_weed_control} a year
+```
