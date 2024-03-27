@@ -6,6 +6,5 @@ class FarmDataSchema(BaseModel):
     crop: schemas.CropSchema
     soil: schemas.SoilSchema
     fertilizer: schemas.FertilizerSchema
-    pests: schemas.PestsSchema
-    diseases: schemas.DiseasesSchema
+    pests_and_diseases: schemas.PestsAndDiseasesSchema
     weeds: schemas.WeedControlMeasuresSchema

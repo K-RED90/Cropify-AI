@@ -1,13 +1,10 @@
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 import json
 
 
 class CropSchema(BaseModel):
     crop: str = Field(..., title="Crop Name", description="Name of the crop")
-    variety: str = Field(
-        ..., default=None, title="Variety", description="Variety of the crop"
-    )
-
+    
     @classmethod
     def from_dict(cls, data: dict):
         return cls(**data)

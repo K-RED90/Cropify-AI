@@ -1,18 +1,18 @@
 from typing import List, Dict, Any
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from langchain_core.output_parsers import PydanticOutputParser
 
 class RecommendationsSchema(BaseModel):
 
     # crop_management: List[str] = Field(default=[], title="Crop Management", description="4 tailored crop management practices")
-    fertilizers: Dict[str, Any] = Field(default={}, title="Fertilizers", description="Specific fertilizer type, nutrient composition, and application rates")
-    application_method: str = Field(default="", title="Application Method", description="Specific method of fertilizer application")
-    application_timing: Dict[str, Any] = Field(default={}, title="Application Timing", description="Timing of fertilizer application with crop stage and rate")
-    nutrient_role: Dict[str, str] = Field(default={}, title="Nutrient Role", description="Role of each nutrient in plant growth and development")
+    fertilizers: Dict[str, Any] = Field(default={}, title="Fertilizers", description="Specific fertilizer, their nutrient composition, and application rates")
+    application_method: str = Field(default="", title="Application Method", description="method of fertilizer application")
+    application_timing: Dict[str, Any] = Field(default={}, title="Application Timing", description="Timing of fertilizer application with rate")
+    # nutrient_role: Dict[str, str] = Field(default={}, title="Nutrient Role", description="Role of each nutrient in plant growth and development")
     pest_control_measures: List[str] = Field(default=[{}], title="Pest Control Measures", description="Specific pest control measures including pesticides, application rates, and timing")
-    disease_prevention: List[str] = Field(default=[], title="disease prevention", description="Specific disease prevention measures")
+    disease_control: List[str] = Field(default=[], title="disease control", description="Specific disease prevention measures")
     fungicides: Dict[str, Any] = Field(default={}, title="fungicide", description="fungicide, application rates, and timing")
-    weeds_control_measure: List[str] = Field(default=[], title="Weeds Control Measure", description="Specific weed control measures, including weedicide with application rate and timing")
+    weeds_control_measure: List[str] = Field(default=[], title="Weeds Control Measure", description="Specific weed control measures, including herbicide with application rate and timing")
     # herbicides: List[str] = Field(..., title="Herbicide", description="Specific herbicides with application rates and timing")
     soil_health: List[str] = Field(default=[], title="Soil Health", description="Specific soil health practices")
     weather_adaptation: List[str] = Field(default=[], title="Weather Adaptation", description="Specific weather adaptation practices")

@@ -1,12 +1,25 @@
-Analyze the data in tripple backticks and provide tailored recommendations.
+Provide specific recommendations improve my farm based on the data below.
 
-```
-Climate Data:
+Crop grown: {crop}
+
+real-time Data from open weather API:
 wind: {wind}
 humidity: {humidity}
 temperature: {temperature}
 heat_index: {heat_index}
 pressure: {pressure}
-```
+
+Soil data:
+{soil}
+
+Fertilizer data:
+{fertilizer}
+
+Pest and disease data:
+{pests_and_diseases}
+
+Weeds data:
+{weeds}
+
 
 {format_instructions}

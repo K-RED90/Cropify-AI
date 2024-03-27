@@ -1,4 +1,5 @@
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+# from langchain.agents.format_scratchpad import 
 import os
 
 def create_prompt():
