@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div style="display: block; margin-left: auto; margin-right: auto; width: 70%;">
     <img src="https://github.com/K-RED90/Cropify-AI/blob/main/image/Designer.jpeg" alt="Cropify Design" width="600" height="400">
 </div>
 
