@@ -1,40 +1,21 @@
-from langchain.pydantic_v1 import BaseModel, root_validator
-from langchain.utils.env import get_from_dict_or_env
-from typing import Dict, Any, Optional
+from typing import Any, Annotated, Sequence
 from dotenv import load_dotenv
-from unix_time_converter import unix_utc_to_datetime
+from .unix_time_converter import unix_utc_to_datetime
+from langchain_community.utilities.openweathermap import OpenWeatherMapAPIWrapper
 
 load_dotenv()
 
 
-class GeoData(BaseModel):
-    owm: Any
-    openweathermap_api_key: Optional[str] = None
-
-    @root_validator(pre=True)
-    def validate_environment(cls, values: Dict) -> Dict:
-        """Validate that api key exists in environment."""
-        openweathermap_api_key = get_from_dict_or_env(
-            values, "openweathermap_api_key", "OPENWEATHERMAP_API_KEY"
-        )
-
-        try:
-            import pyowm
-
-        except ImportError:
-            raise ImportError(
-                "pyowm is not installed. Please install it with `pip install pyowm`"
-            )
-
-        owm = pyowm.OWM(openweathermap_api_key)
-        values["owm"] = owm
-
-        return values
+class WeatherAPI(OpenWeatherMapAPIWrapper):
     
+    @classmethod
+    def add_method(cls, func):
+        setattr(cls, func.__name__, func)
+        return func
 
-    def get_location_name(self, lat: float, lon: float, limit: int = 1):
+    def get_location_name(self, cordinates: Annotated[Sequence[float], "Cordinates of the location (lat, lon)"], limit: int = 1):
         gem = self.owm.geocoding_manager()
-        locations = gem.reverse_geocode(lat, lon, limit = limit)
+        locations = gem.reverse_geocode(*cordinates, limit = limit)
         return locations
     
 
@@ -75,16 +56,16 @@ class GeoData(BaseModel):
 
         }
    
-    def get_weather(self, lat:float, lon: float) -> str:
+    def run(self, cordinates: Annotated[Sequence[float], "Cordinates of the location (lat, lon)"]) -> str:
         """Get the current weather information for a specified lat and lon."""
         mgr = self.owm.weather_manager()
-        observation = mgr.weather_at_coords(lat, lon)
+        observation = mgr.weather_at_coords(*cordinates)
         w = observation.weather
         climate_data = self._format_weather_info(w)
 
         return climate_data
     
 
-gd = GeoData()
+# gd = WeatherAPI()
 
-print(gd.get_weather(6.6642, -1.8169))
+# print(gd(6.6642, -1.8169))

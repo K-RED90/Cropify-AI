@@ -1,7 +1,6 @@
-from typing import Union, List, Dict, Any
+from typing import List, Dict, Any
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.output_parsers import PydanticOutputParser
-from langchain.output_parsers import RetryWithErrorOutputParser
 
 class RecommendationsSchema(BaseModel):
 

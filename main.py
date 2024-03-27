@@ -5,6 +5,12 @@ from dotenv import load_dotenv
 from langchain_core.output_parsers.openai_tools import JsonOutputToolsParser
 from langchain.output_parsers.fix import OutputFixingParser
 from schemas.ai_recommendations import RecommendationsSchema
+from langchain_core.runnables import RunnableParallel, RunnableLambda
+from langchain_core.output_parsers import StrOutputParser
+from operator import itemgetter
+from typing import Annotated, Sequence
+from utils.weather import WeatherAPI
+from pprint import pprint
 import os
 import json
 
@@ -14,10 +20,15 @@ with open(f"sample_data{os.sep}sample.json") as f:
     data = json.load(f)
 
 
-def main(data):
+weather_api = WeatherAPI()
+
+
+def main(
+    data,
+    cordinates: Annotated[Sequence[float], "Cordinates of the location (lat, lon)"],
+):
     llm = ChatOpenAI(
         model="gpt-3.5-turbo-0125",
-        api_key="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",
     )
     # output_parser = JsonOutputToolsParser(strict=True)
     output_parser, format_instructions = RecommendationsSchema.get_format_instructions()
@@ -26,16 +37,17 @@ def main(data):
     prompt = create_prompt()
     prompt = prompt.partial(format_instructions=format_instructions)
     dashboard = CropDashboard(
-        llm=llm, prompt=prompt, 
-        output_parser=output_parser, 
-        fixing_parser=fixing_parser
+        llm=llm,
+        prompt=prompt,
+        output_parser=output_parser,
+        fixing_parser=fixing_parser,
+        weather_api=weather_api,
     )
 
-    chain = dashboard.llm_chain(tools=None)
-    return chain.invoke(data)
-    # yield token
+    chain = dashboard.llm_chain()
+    return chain.invoke(input={"data": data, "cordinates": cordinates})
 
 
 if __name__ == "__main__":
-    print(main(data))
+    pprint(main(data, cordinates=(6.6642, -1.8169)))
     # print(token, end="", flush=True)

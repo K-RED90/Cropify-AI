@@ -1,28 +1,12 @@
-Analyze the data in tripple backticks and provide tailored recommendations based on the system instructions.
+Analyze the data in tripple backticks and provide tailored recommendations.
 
 ```
-Crop grown: {Crop}
-
-
 Climate Data:
 wind: {wind}
 humidity: {humidity}
 temperature: {temperature}
 heat_index: {heat_index}
 pressure: {pressure}
-
-
-soil type: {soil_type}
-soil texture: {soil_texture}
-soil ph: {soil_ph}
-percentage of soil moisture: {pct_soil_moisture}
-soil fertility: {soil_fertility}
-nutrients proportion in fertility: {nutrients_proportion}
-frequency of_fertilizer application: {frequency_of_application} a year
-pest name: {pest_name}
-disease name: {disease_name}
-weed control method: {weed_control_method}
-frequency of weed control: {frequency_of_weed_control} a year
 ```
 
 {format_instructions}
