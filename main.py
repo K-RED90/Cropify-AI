@@ -2,15 +2,11 @@ from prompts.dashboard import create_prompt
 from dashboard.crop_dashboard import CropDashboard
 from langchain_openai.chat_models import ChatOpenAI
 from dotenv import load_dotenv
-from langchain_core.output_parsers.openai_tools import JsonOutputToolsParser
 from langchain.output_parsers.fix import OutputFixingParser
 from schemas.ai_recommendations import RecommendationsSchema
-from langchain_core.runnables import RunnableParallel, RunnableLambda
-from langchain_core.output_parsers import StrOutputParser
-from operator import itemgetter
 from typing import Annotated, Sequence
 from utils.weather import WeatherAPI
-from pprint import pprint
+from schemas.farm_data import FarmDataSchema
 import os
 import json
 
@@ -48,6 +44,8 @@ def main(
     return chain.invoke(input={"data": data, "cordinates": cordinates})
 
 
-if __name__ == "__main__":
-    pprint(main(data, cordinates=(6.6642, -1.8169)))
+# if __name__ == "__main__":
+#     pprint(main(data, cordinates=(6.6642, -1.8169)))
     # print(token, end="", flush=True)
+
+FarmDataSchema()

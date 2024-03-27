@@ -4,7 +4,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 class RecommendationsSchema(BaseModel):
 
-    crop_management: List[str] = Field(default=[], title="Crop Management", description="4 tailored crop management practices")
+    # crop_management: List[str] = Field(default=[], title="Crop Management", description="4 tailored crop management practices")
     fertilizers: Dict[str, Any] = Field(default={}, title="Fertilizers", description="Specific fertilizer type, nutrient composition, and application rates")
     application_method: str = Field(default="", title="Application Method", description="Specific method of fertilizer application")
     application_timing: Dict[str, Any] = Field(default={}, title="Application Timing", description="Timing of fertilizer application with crop stage and rate")

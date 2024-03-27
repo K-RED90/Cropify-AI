@@ -20,8 +20,6 @@ class CropDashboard(BaseModel):
     def llm_chain(self, tools: Optional[List[BaseTool]] = None):
         if tools is not None:
             tools = [convert_to_openai_tool(tool) for tool in tools]
-            # print(tools)
-            # import sys; sys.exit()
         else:
             tools = None
         completion_chain = (
