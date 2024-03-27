@@ -1,4 +1,4 @@
-*z*Soil texture refers to the relative proportions of different sizes of soil particles and is determined by the percentage of sand, silt, and clay present in the soil. These proportions influence nearly every aspect of soil use and management, such as water retention, nutrient availability, and aeration¹.
+**Soil texture** refers to the relative proportions of different sizes of soil particles and is determined by the percentage of sand, silt, and clay present in the soil. These proportions influence nearly every aspect of soil use and management, such as water retention, nutrient availability, and aeration¹.
 
 Here's a breakdown of the particle sizes:
 - **Sand**: 2.0 – 0.05 mm in diameter
