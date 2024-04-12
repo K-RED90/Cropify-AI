@@ -1,6 +1,5 @@
 from dashboard.crop_dashboard import CropDashboard
 from dotenv import load_dotenv
-import json
 from dashboard.prompt_templates import (
     FERTILIZER_SYSTEM_PROMPT,
     PEST_AND_DISEASE_PROMPT,
@@ -51,7 +50,7 @@ def add_farm_data(farm_id, data: FarmDataSchema):
 @app.post("/weather")
 def add_weather_data(data: dict):
     global weather_data
-    weather_data = data
+    weather_data = GetWeatherDataByCordinates().invoke(data)
     return {"message": "Weather data added successfully"}
 
 
@@ -93,4 +92,4 @@ soil_chain = partial(
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", port=8000, reload=True)
