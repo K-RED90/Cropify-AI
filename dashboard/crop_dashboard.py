@@ -1,43 +1,41 @@
-from pydantic import BaseModel
-from typing import List, Any, Optional
-from langchain_core.tools import BaseTool
-from langchain_core.runnables import RunnableParallel, RunnableLambda
-from langchain_core.utils.function_calling import convert_to_openai_tool
-import itertools
+from typing import Any, Optional, Dict
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_core.language_models import BaseChatModel
+from .utils import load_llm
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers.openai_functions import JsonOutputFunctionsParser
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.utils.function_calling import convert_to_openai_function
+from langchain_core.messages import HumanMessage
 
 
 class CropDashboard(BaseModel):
-    llm: Any
-    prompt: Any
-    output_parser: Any
-    fixing_parser: Optional[Any] = None
-    weather_api: Any
+    llm: Optional[BaseChatModel] = Field(default_factory=load_llm)
+    weather_api: Optional[Any] = None
 
     class Config:
         arbitrary_types_allowed = True
 
-    def llm_chain(self, tools: Optional[List[BaseTool]] = None):
-        if tools is not None:
-            tools = [convert_to_openai_tool(tool) for tool in tools]
+    def create_chain(
+        self,
+        farm_data: Dict,
+        prompt_template,
+        structed_output: bool = False,
+        schema: BaseModel = None,
+    ):
+        prompt = ChatPromptTemplate.from_template(prompt_template)
+        base_chain = prompt | self.llm
+        if structed_output:
+            if schema is None:
+                raise ValueError("Schema is required for structured output")
+            chain = (
+                base_chain
+                | (lambda x: [HumanMessage(content=x.content)])
+                | self.llm.bind_functions(
+                    functions=[convert_to_openai_function(schema)]
+                )
+                | JsonOutputFunctionsParser()
+            )
         else:
-            tools = None
-        completion_chain = (
-            RunnableParallel(
-                farm_data=lambda x: x["data"],
-                cord=lambda x: self.weather_api.run(x["cordinates"]),
-            )
-            | RunnableLambda(self._flatten_dict)
-            | self.prompt
-            | self.llm.bind(tools=tools)
-            | self.output_parser
-        )
-        return completion_chain
-
-    def _flatten_dict(self, data: dict):
-        flattened_data = {
-            k: v
-            for k, v in itertools.chain.from_iterable(
-                [value.items() for value in data.values()]
-            )
-        }
-        return flattened_data
+            chain = base_chain | StrOutputParser()
+        return chain.invoke(farm_data)
