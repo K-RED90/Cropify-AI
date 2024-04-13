@@ -1,12 +1,18 @@
 from typing import Any, Optional, Dict
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.language_models import BaseChatModel
-from .utils import load_llm
+from .utils import load_llm, flatten_nested_dict
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers.openai_functions import JsonOutputFunctionsParser
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain_core.messages import HumanMessage
+from langchain_core.runnables import (
+    RunnableLambda,
+    RunnablePassthrough,
+    RunnableParallel,
+)
+from operator import itemgetter
 
 
 class CropDashboard(BaseModel):
@@ -24,7 +30,19 @@ class CropDashboard(BaseModel):
         schema: BaseModel = None,
     ):
         prompt = ChatPromptTemplate.from_template(prompt_template)
-        base_chain = prompt | self.llm
+        base_chain = (
+            RunnableParallel(
+                {
+                    "farm_data": itemgetter("farm_data")
+                    | RunnableLambda(flatten_nested_dict),
+                    "weather_data": itemgetter("weather_data") | RunnablePassthrough(),
+                }
+            )
+            | (lambda x: {**x["farm_data"], **x["weather_data"]})
+            | prompt
+            | self.llm
+        )
+
         if structed_output:
             if schema is None:
                 raise ValueError("Schema is required for structured output")

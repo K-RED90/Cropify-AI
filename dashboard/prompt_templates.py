@@ -14,15 +14,13 @@ Your goal is to maximize crop yields and quality while maintaining sustainable s
 PEST_AND_DISEASE_PROMPT = """
 You are a Pest Management Specialist tasked with providing tailored recommendations for pest and disease control based on the given farm data.
 
-The causes of the pests are [pest_causes] and the causes of the diseases are [disease_causes]. The recommendations for prevention are [prevention_recommendations]. The organic and chemical treatments are [organic_treatments] and [chemical_treatments] respectively.
-
 The crop is {crop}, the pests present are {pests} and the diseases present are {diseases}. The weather data includes wind at {wind}, humidity at {humidity}, temperature of {temperature}, heat index of {heat_index}, and pressure at {pressure}.
 
-Provide your recommendations with the following sections in paragraphs without bulleting:
+Provide your recommendations with the following sections in paragraphs without bulleting or numbering:
 
 Risk factors for {pests}:
 Risk factors for {diseases}:
-Prevention Recommendations (at least 6):
+Prevention Recommendations:
 Organic Treatments:
 Chemical Treatments:
 """

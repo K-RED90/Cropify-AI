@@ -31,8 +31,37 @@ app.add_middleware(
 load_dotenv(override=True)
 
 crops_data = {}
-weather_data = None
+weather_data = {
+    "detail_status": "broken clouds",
+    "reference_time": "2024-04-13T15:52:48+00:00",
+    "sunset_time": "2024-04-13T18:15:13+00:00",
+    "sunrise_time": "2024-04-13T05:59:45+00:00",
+    "wind": "1.59 m/s, direction: 167°",
+    "humidity": "42%",
+    "temperature": "34.7°C",
+    "status": "Clouds",
+    "rain": {},
+    "heat_index": None,
+    "clouds": "63%",
+    "pressure": "1006 hPa",
+    "precipitation_probability": None,
+}
 dash = CropDashboard()
+fertilizer_chain = partial(
+    dash.create_chain, prompt_template=FERTILIZER_SYSTEM_PROMPT, structed_output=False
+)
+weed_chain = partial(
+    dash.create_chain,
+    prompt_template=WEEDS_CONTROL_PROMPT,
+    schema=WeedControlRecommendations,
+    structed_output=True,
+)
+soil_chain = partial(
+    dash.create_chain,
+    prompt_template=SOIL_HEALTH_AND_CROP_MANAGEMENT_PROMPT,
+    schema=SoilHealthAndCropManagementPlan,
+    structed_output=True,
+)
 
 
 @app.get("/")
@@ -59,7 +88,13 @@ def get_weather_data():
     return weather_data
 
 
-# fertilizer_chain = partial(dash.chain_with_structured_output, FERTILIZER_SYSTEM_PROMPT, FertilizerSchema)
+@app.get("/fertilizer")
+def get_fertilizer_recommendations(farm_id):
+    return fertilizer_chain(
+        farm_data={"farm_data": crops_data[farm_id], "weather_data": weather_data}
+    )
+
+
 @app.get("/pest")
 def get_pest_recommendations(farm_id):
     pest_chain = partial(
@@ -68,25 +103,23 @@ def get_pest_recommendations(farm_id):
         schema=PestAndDiseaseControl,
         structed_output=True,
     )
-    farmer_and_weather_data = {**crops_data[farm_id], **weather_data}
-    print(farmer_and_weather_data)
+    return pest_chain(
+        farm_data={"farm_data": crops_data[farm_id], "weather_data": weather_data}
+    )
 
 
-fertilizer_chain = partial(
-    dash.create_chain, prompt_template=FERTILIZER_SYSTEM_PROMPT, structed_output=False
-)
-weed_chain = partial(
-    dash.create_chain,
-    prompt_template=WEEDS_CONTROL_PROMPT,
-    schema=WeedControlRecommendations,
-    structed_output=True,
-)
-soil_chain = partial(
-    dash.create_chain,
-    prompt_template=SOIL_HEALTH_AND_CROP_MANAGEMENT_PROMPT,
-    schema=SoilHealthAndCropManagementPlan,
-    structed_output=True,
-)
+@app.get("/weed")
+def get_weed_recommendations(farm_id):
+    return weed_chain(
+        farm_data={"farm_data": crops_data[farm_id], "weather_data": weather_data}
+    )
+
+
+@app.get("/soil")
+def get_soil_recommendations(farm_id):
+    return soil_chain(
+        farm_data={"farm_data": crops_data[farm_id], "weather_data": weather_data}
+    )
 
 
 if __name__ == "__main__":

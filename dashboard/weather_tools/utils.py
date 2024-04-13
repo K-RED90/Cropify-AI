@@ -27,12 +27,7 @@ def format_weather_info(w: Any) -> str:
             "sunrise_time": sunrise_time,
             "wind": f"{wind['speed']} m/s, direction: {wind['deg']}°",
             "humidity": f"{humidity}%",
-            "temperature": {
-                "current": f"{temperature['temp']}°C",
-                "high": f"{temperature['temp_max']}°C",
-                "low": f"{temperature['temp_min']}°C",
-                "feels_like": f"{temperature['feels_like']}°C",
-            },
+            "temperature": f"{temperature['temp']}°C",
             "status": status,
             "rain": rain,
             "heat_index": heat_index,
