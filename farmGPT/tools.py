@@ -18,8 +18,8 @@ class CustomDDGSearch(DuckDuckGoSearchRun):
         results = [f"{result['snippet']}\n{result['link']}" for result in results]
         return "\n\n".join(results)
 
-    def _arun(self, *args: Any, **kwargs: Any) -> Coroutine[Any, Any, Any]:
-        return asyncify(self._run, cancellable=True)(*args, **kwargs)
+    async def _arun(self, *args: Any, **kwargs: Any) -> Coroutine[Any, Any, Any]:
+        return await asyncify(self._run, cancellable=True)(*args, **kwargs)
 
 
 class InputSchema(BaseModel):

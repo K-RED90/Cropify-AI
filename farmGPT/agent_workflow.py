@@ -3,14 +3,14 @@ from langgraph.graph import END, StateGraph
 from langchain_core.messages import BaseMessage, AIMessage
 from langchain_core.pydantic_v1 import BaseModel, root_validator
 from langchain_core.language_models import BaseChatModel
-from core import (
+from farmGPT.core import (
     input_validator,
     search_content_evaluator,
     farm_llm,
     rag_agent,
     fallback_response,
 )
-from tools import search_tool
+from farmGPT.tools import search_tool
 from langchain_core.runnables import Runnable
 
 

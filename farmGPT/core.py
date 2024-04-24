@@ -1,4 +1,4 @@
-from prompts import (
+from farmGPT.prompts import (
     INITIAL_MESSAGE_VALIDATION,
     FARM_LLM_SYSTEM_PROMPT,
     EVALUATION_PROMPT,
