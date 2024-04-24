@@ -54,8 +54,7 @@ weed_chain = partial(
     dash.create_chain,
     prompt_template=WEEDS_CONTROL_PROMPT,
     schema=WeedControlRecommendations,
-    structed_output=True,
-)
+    structed_output=True)
 soil_chain = partial(
     dash.create_chain,
     prompt_template=SOIL_HEALTH_AND_CROP_MANAGEMENT_PROMPT,
@@ -75,11 +74,19 @@ def add_farm_data(farm_id, data: FarmDataSchema):
     return {"message": "Farm data added successfully"}
 
 
+
+from pydantic import BaseModel, Field
+
+class WeatherSchema(BaseModel):
+    lat: float
+    lon: float
+
+
 # Add weather data
 @app.post("/weather")
-def add_weather_data(data: dict):
+def add_weather_data(data: WeatherSchema):
     global weather_data
-    weather_data = GetWeatherDataByCordinates().invoke(data)
+    weather_data = GetWeatherDataByCordinates().invoke(data.model_dump())
     return {"message": "Weather data added successfully"}
 
 

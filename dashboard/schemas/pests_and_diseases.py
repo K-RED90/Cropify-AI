@@ -6,7 +6,7 @@ import json
 class PestsAndDiseasesSchema(BaseModel):
     pests: List[str] | str | None = Field(None, title="Pests", description="pests affecting the crop")
     diseases : List[str] | str | None = Field(None, title="Diseases", description="diseases affecting the crop")
-    damage: str = Field(..., title="Damage", description="Damage caused by the pest")
+    # damage: str = Field(..., title="Damage", description="Damage caused by the pest")
 
     @classmethod
     def from_dict(cls, data: dict):

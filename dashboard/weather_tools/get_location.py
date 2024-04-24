@@ -1,4 +1,4 @@
-from typing import Any, Coroutine, Type
+from typing import Any, Type
 from .base import BaseOpenWeatherMap
 from langchain_core.pydantic_v1 import BaseModel, Field
 from asyncer import asyncify
