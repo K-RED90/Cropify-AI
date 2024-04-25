@@ -1,42 +1,58 @@
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, Type, Callable, Union, Dict
 from langgraph.graph import END, StateGraph
 from langchain_core.messages import BaseMessage, AIMessage
 from langchain_core.pydantic_v1 import BaseModel, root_validator
 from langchain_core.language_models import BaseChatModel
-from farmGPT.core import (
+from core import (
     input_validator,
     search_content_evaluator,
     farm_llm,
     rag_agent,
     fallback_response,
+    pest_and_disease_tool,
+    encode_image,
+    Pest,
+    Disease,
+    PestOrDisease,
 )
-from farmGPT.tools import search_tool
+from prompts import PEST_PROMPT, DISEASE_PROMPT, IMAGE_CLASSIFICATION_PROMPT
+from tools import search_tool
 from langchain_core.runnables import Runnable
+from functools import partial
 
 
 class AgentState(TypedDict):
-    input: str | BaseMessage
+    input: Optional[str | BaseMessage] = None
+    image_path: Optional[str] = None
     chat_history: list[BaseMessage]
     search_results: Optional[str] = None
-    agent_outcome: AIMessage
+    label: Optional[Type[BaseMessage]] = None
+    agent_outcome: Union[AIMessage, Type[BaseModel], Dict]
+    images_analysis: Type[BaseModel] | Dict = None
 
 
 class AgentNodes(BaseModel):
     llm: Optional[BaseChatModel] = None
+    vision_tool: Optional[Callable] = None
 
     @root_validator
     def check_llm(cls, values):
         if values["llm"] is None:
             try:
                 from langchain_openai.chat_models import ChatOpenAI
+                from langchain_anthropic.chat_models import ChatAnthropic
             except ImportError:
                 raise ImportError(
                     "Please install the openai plugin to use the default LLM. Run `pip install langchain-openai`"
                 )
             values["llm"] = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.5)
+            vision_model = ChatAnthropic(
+                model="claude-3-haiku-20240307", temperature=0.0
+            )
+            values["vision_tool"] = partial(pest_and_disease_tool, vision_model)
         return values
 
-    def input_validator_node(self, state: AgentState):
+    def router(self, state: AgentState):
         """Validate the user's input to determine if it is farm-related or not.
 
         Args:
@@ -45,9 +61,56 @@ class AgentNodes(BaseModel):
         Returns:
             str: The output of the validation
         """
-        chain = input_validator(self.llm)
-        output = chain.invoke(state)
-        return output.is_farm_related
+        if state["image_path"] is not None:
+            image = encode_image(state["image_path"])
+            output = self.vision_tool(
+                img_base64=image,
+                prompt_template=IMAGE_CLASSIFICATION_PROMPT,
+                schema=PestOrDisease,
+            )
+            print(output)
+            if output.label == "pest":
+                return "pest"
+            elif output.label == "disease":
+                return "disease"
+            else:
+                return "other"
+        else:
+            chain = input_validator(self.llm)
+            output = chain.invoke(state)
+            return output.is_farm_related
+
+    def crop_disease_node(self, state: AgentState) -> dict[str, AIMessage]:
+        """Identify the crop disease from the user's input.
+
+        Args:
+            state (AgentState): The state of the agent
+
+        Returns:
+            dict[str, AIMessage]: The response to the user's query
+        """
+        image = encode_image(state["image_path"])
+        output = self.vision_tool(
+            img_base64=image,
+            prompt_template=DISEASE_PROMPT,
+            schema=Disease,
+        )
+        return {"images_analysis": output, "input": str(output.name)+" treatment recommendations"}
+
+    def crop_pest_node(self, state: AgentState) -> dict[str, AIMessage]:
+        """Identify the crop pest from the user's input.
+
+        Args:
+            state (AgentState): The state of the agent
+
+        Returns:
+            dict[str, AIMessage]: The response to the user's query
+        """
+        image = encode_image(state["image_path"])
+        output = self.vision_tool(
+            img_base64=image, prompt_template=PEST_PROMPT, schema=Pest
+        )
+        return {"images_analysis": output, "input": str(output.name) + " treatment recommendations"}
 
     def search_engine_node(self, state: AgentState) -> dict:
         """Search the input query using the search tool.
@@ -147,16 +210,39 @@ def compile_graph(llm: Optional[BaseChatModel] = None) -> Runnable:
     graph.add_node("generate_response", nodes.generate_response)
     graph.add_node("agric_specialist", nodes.agric_specialist_node)
     graph.add_node("fallback_node", nodes.fallback_node)
+    graph.add_node("crop_disease", nodes.crop_disease_node)
+    graph.add_node("crop_pest", nodes.crop_pest_node)
     graph.set_conditional_entry_point(
-        nodes.input_validator_node, {"Yes": "search_engine", "No": "fallback_node"}
+        nodes.router,
+        {
+            "Yes": "search_engine",
+            "No": "fallback_node",
+            "pest": "crop_pest",
+            "disease": "crop_disease",
+            "other": END,
+        },
     )
     graph.add_conditional_edges(
         "search_engine",
         nodes.should_generate,
         {"relevant": "generate_response", "not relevant": "agric_specialist"},
     )
+    graph.add_edge("crop_disease", "search_engine")
+    graph.add_edge("crop_pest", "search_engine")
     graph.add_edge("generate_response", END)
     graph.add_edge("agric_specialist", END)
     graph.add_edge("fallback_node", END)
-    app = graph.compile() | (lambda x: x["agent_outcome"])
+    app = graph.compile()  # | (lambda x: x["agent_outcome"])
     return app
+
+
+if __name__ == "__main__":
+    app = compile_graph()
+    output = app.invoke(
+        {
+            "image_path": None,
+            "chat_history": [],
+            "input": "What is the purpose of Atrazine",
+        }
+    )
+    print(output)

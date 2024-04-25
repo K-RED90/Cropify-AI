@@ -1,15 +1,19 @@
-from farmGPT.prompts import (
+from prompts import (
     INITIAL_MESSAGE_VALIDATION,
     FARM_LLM_SYSTEM_PROMPT,
     EVALUATION_PROMPT,
     RAG_PROMPT,
-    FALLBACK_PROMPT
+    FALLBACK_PROMPT,
 )
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.pydantic_v1 import BaseModel, Field
-from typing import Literal, Optional
+from typing import Literal, Optional, List, Type
 from langchain_core.output_parsers.openai_tools import JsonOutputToolsParser
+from langchain_core.messages import HumanMessage
+from langchain_core.output_parsers import PydanticOutputParser, StrOutputParser
+import base64
+from langchain_core.runnables import RunnableLambda
 
 
 class ValidatorOutput(BaseModel):
@@ -90,9 +94,98 @@ def rag_agent(llm: BaseChatModel, system_prompt: Optional[str] = None):
 
 def fallback_response(llm: BaseChatModel, system_prompt: Optional[str] = None):
     system_prompt = system_prompt or FALLBACK_PROMPT
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        MessagesPlaceholder(variable_name="chat_history"),
-        ("user", "Input: {input}")
-    ])
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("user", "Input: {input}"),
+        ]
+    )
     return prompt | llm
+
+
+class Recommendation(BaseModel):
+    description: str = Field(..., description="Description of the recommendation")
+    type: str = Field(
+        ...,
+        description="Type of recommendation (e.g., 'pesticide', 'organic treatment', 'cultural practice')",
+    )
+
+
+class Pest(BaseModel):
+    name: str = Field(..., description="name of the pest")
+    description: str = Field(
+        ...,
+        description="Description of the pest, including physical characteristics, behavior, and crops affected",
+    )
+    potential_damage: str = Field(
+        ..., description="Potential damage caused by the pest"
+    )
+    recommendations: List[Recommendation] = Field(
+        ..., description="List of recommendations for controlling the pest"
+    )
+
+
+class Disease(BaseModel):
+    name: str = Field(..., description="Name of the disease")
+    symptoms: str = Field(..., description="Symptoms of the disease")
+    recommendations: List[Recommendation] = Field(
+        ..., description="List of recommendations for treating or managing the disease"
+    )
+
+
+class PestOrDisease(BaseModel):
+    """Use this schema to provide information about a pest, disease, or other issue identified in an image."""
+
+    label: Literal["pest", "disease", "other"] = Field(
+        ..., description="Type of the image"
+    )
+
+
+def extract_json_str(s):
+    start = s.find("{")
+    end = s.rfind("}") + 1
+    json_str = s[start:end]
+    return json_str
+
+
+def pest_and_disease_tool(
+    llm: BaseChatModel, img_base64, prompt_template: str, schema: Type[BaseModel]
+):
+    """This function can be used to classify uploaded images as pests, diseases, or other issues and can also be used to provide recommendations for controlling pests or diseases."""
+    pydantic_parser = PydanticOutputParser(pydantic_object=schema)
+    format_instructions = pydantic_parser.get_format_instructions()
+    messages = [
+        HumanMessage(
+            content=[
+                {
+                    "type": "text",
+                    "text": prompt_template.format(
+                        format_instructions=format_instructions
+                    ),
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{img_base64}"},
+                },
+            ]
+        )
+    ]
+    return (
+        llm | StrOutputParser() | RunnableLambda(extract_json_str) | pydantic_parser
+    ).invoke(messages)
+
+
+from PIL import Image
+import io
+import base64
+
+
+def encode_image(image_path):
+    """Getting the base64 string"""
+    # Open the image file
+    with Image.open(image_path) as img:
+        with io.BytesIO() as output_bytes:
+            img.save(output_bytes, format="JPEG")
+            jpeg_data = output_bytes.getvalue()
+        return base64.b64encode(jpeg_data).decode("utf-8")
