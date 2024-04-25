@@ -3,7 +3,7 @@ from langgraph.graph import END, StateGraph
 from langchain_core.messages import BaseMessage, AIMessage
 from langchain_core.pydantic_v1 import BaseModel, root_validator
 from langchain_core.language_models import BaseChatModel
-from core import (
+from .core import (
     input_validator,
     search_content_evaluator,
     farm_llm,
@@ -15,18 +15,19 @@ from core import (
     Disease,
     PestOrDisease,
 )
-from prompts import PEST_PROMPT, DISEASE_PROMPT, IMAGE_CLASSIFICATION_PROMPT
-from tools import search_tool
+from .prompts import PEST_PROMPT, DISEASE_PROMPT, IMAGE_CLASSIFICATION_PROMPT
+from .tools import search_tool
 from langchain_core.runnables import Runnable
 from functools import partial
+
 
 
 class AgentState(TypedDict):
     input: Optional[str | BaseMessage] = None
     image_path: Optional[str] = None
     chat_history: list[BaseMessage]
-    search_results: Optional[str] = None
-    label: Optional[Type[BaseMessage]] = None
+    search_results: Optional[str]
+    label: Optional[Type[BaseMessage]]
     agent_outcome: Union[AIMessage, Type[BaseModel], Dict]
     images_analysis: Type[BaseModel] | Dict = None
 
@@ -40,16 +41,24 @@ class AgentNodes(BaseModel):
         if values["llm"] is None:
             try:
                 from langchain_openai.chat_models import ChatOpenAI
-                from langchain_anthropic.chat_models import ChatAnthropic
             except ImportError:
                 raise ImportError(
                     "Please install the openai plugin to use the default LLM. Run `pip install langchain-openai`"
                 )
             values["llm"] = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.5)
+
+        if values["vision_tool"] is None:
+            try:
+                from langchain_anthropic.chat_models import ChatAnthropic
+            except ImportError:
+                raise ImportError(
+                    "Please install the anthropic plugin to use the default LLM. Run `pip install langchain-anthropic`"
+                )
             vision_model = ChatAnthropic(
                 model="claude-3-haiku-20240307", temperature=0.0
             )
-            values["vision_tool"] = partial(pest_and_disease_tool, vision_model)
+            values["vision_tool"] = partial(pest_and_disease_tool, llm=vision_model)
+            print(values)
         return values
 
     def router(self, state: AgentState):
@@ -68,7 +77,6 @@ class AgentNodes(BaseModel):
                 prompt_template=IMAGE_CLASSIFICATION_PROMPT,
                 schema=PestOrDisease,
             )
-            print(output)
             if output.label == "pest":
                 return "pest"
             elif output.label == "disease":
@@ -95,7 +103,10 @@ class AgentNodes(BaseModel):
             prompt_template=DISEASE_PROMPT,
             schema=Disease,
         )
-        return {"images_analysis": output, "input": str(output.name)+" treatment recommendations"}
+        return {
+            "images_analysis": output,
+            "input": str(output.name) + " treatment OR control",
+        }
 
     def crop_pest_node(self, state: AgentState) -> dict[str, AIMessage]:
         """Identify the crop pest from the user's input.
@@ -110,7 +121,10 @@ class AgentNodes(BaseModel):
         output = self.vision_tool(
             img_base64=image, prompt_template=PEST_PROMPT, schema=Pest
         )
-        return {"images_analysis": output, "input": str(output.name) + " treatment recommendations"}
+        return {
+            "images_analysis": output,
+            "input": str(output.name) + " treatment OR control",
+        }
 
     def search_engine_node(self, state: AgentState) -> dict:
         """Search the input query using the search tool.
@@ -162,6 +176,12 @@ class AgentNodes(BaseModel):
                 "chat_history": state["chat_history"],
             }
         )
+        if state.get("images_analysis") is not None:
+            return {
+                "agent_outcome": AIMessage(
+                    content=[{**state["images_analysis"].dict(), **output[0]["args"]}]
+                )
+            }
 
         return {"agent_outcome": AIMessage(content=[output[0]["args"]])}
 
@@ -232,17 +252,5 @@ def compile_graph(llm: Optional[BaseChatModel] = None) -> Runnable:
     graph.add_edge("generate_response", END)
     graph.add_edge("agric_specialist", END)
     graph.add_edge("fallback_node", END)
-    app = graph.compile()  # | (lambda x: x["agent_outcome"])
+    app = graph.compile() | (lambda x: x["agent_outcome"])
     return app
-
-
-if __name__ == "__main__":
-    app = compile_graph()
-    output = app.invoke(
-        {
-            "image_path": None,
-            "chat_history": [],
-            "input": "What is the purpose of Atrazine",
-        }
-    )
-    print(output)

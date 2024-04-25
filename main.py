@@ -12,18 +12,16 @@ from dashboard.schemas.ai_recommendations import (
     SoilHealthAndCropManagementPlan,
 )
 from functools import partial
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+import tempfile
 from fastapi import status
-from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from dashboard.schemas.farm_data import FarmDataSchema
 from dashboard.weather_tools.get_weather_data import GetWeatherDataByCordinates
 from farmGPT.agent_workflow import compile_graph
-from langchain_core.language_models import BaseChatModel
-from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from pydantic import BaseModel, Field
-from uuid import uuid4
+from langchain_core.runnables import Runnable
+from pydantic import BaseModel
+import os
 
 app = FastAPI()
 
@@ -71,7 +69,6 @@ soil_chain = partial(
     structed_output=True,
 )
 
-agent = None
 history = dict()
 
 
@@ -85,47 +82,30 @@ def load_llm(model_name: str = "gpt-3.5-turbo-0125", temperature: float = 0.5):
     return ChatOpenAI(model=model_name, temperature=temperature)
 
 
-class Message(BaseModel):
-    input: str
-    session_id: str = uuid4()
+# class Message(BaseModel):
+#     input: str
+#     session_id: str = uuid4()
 
 
-def load_conversation_history(session_id: str = uuid4()):
-    if session_id not in history:
-        history[session_id] = ChatMessageHistory()
-    return history[session_id]
+# def load_conversation_history(session_id: str = uuid4()):
+#     if session_id not in history:
+#         history[session_id] = ChatMessageHistory()
+#     return history[session_id]
 
 
-@app.post("/compile")
-def compile_agent_workflow(llm: BaseChatModel = Depends(load_llm)):
-    try:
-        global agent
-        agent = RunnableWithMessageHistory(
-            runnable=compile_graph(llm=llm),
-            input_messages_key="input",
-            history_messages_key="chat_history",
-            get_session_history=load_conversation_history,
-        )
-        return {"message": "Agent workflow compiled successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-
-
-@app.post("/chat")
-def chat_with_agent(message: Message):
-    try:
-        assert (
-            agent is not None
-        ), "Agent graph is not compiled yet. Compile the graph by calling the `compile_agent_workflow` function"
-
-        response = agent.invoke(
-            {"input": message.input},
-            config={"configurable": {"session_id": message.session_id}},
-        )
-        return response
-
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+# @app.post("/compile")
+# def compile_agent_workflow(llm: BaseChatModel = Depends(load_llm)):
+#     try:
+#         global agent
+#         agent = RunnableWithMessageHistory(
+#             runnable=compile_graph(llm=llm),
+#             input_messages_key="input",
+#             history_messages_key="chat_history",
+#             get_session_history=load_conversation_history,
+#         )
+#         return {"message": "Agent workflow compiled successfully"}
+#     except Exception as e:
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @app.get("/")
@@ -189,6 +169,69 @@ def get_soil_recommendations(farm_id):
     return soil_chain(
         farm_data={"farm_data": crops_data[farm_id], "weather_data": weather_data}
     )
+
+
+class Message(BaseModel):
+    message: str
+
+
+def graph(model_name: str = "gpt-3.5-turbo-0125", temperature: float = 0.5):
+    try:
+        from langchain_openai.chat_models import ChatOpenAI
+    except ImportError:
+        raise ImportError(
+            "Please install the openai plugin to use the default LLM. Run `pip install langchain-openai`"
+        )
+    llm = ChatOpenAI(model=model_name, temperature=temperature)
+    agent = compile_graph(llm=llm)
+    return agent
+
+
+@app.post("/chat/")
+async def invoke(request: Message, agent: Runnable = Depends(graph)):
+    try:
+        return agent.invoke(
+            {
+                "image_path": None,
+                "input": request.message,
+                "chat_history": [],
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@app.post("/image")
+async def invoke_with_image(
+    image: UploadFile = File(...), agent: Runnable = Depends(graph)
+):
+    try:
+        if image.file:  # Check if image.file is not None
+            with tempfile.NamedTemporaryFile(delete=False) as temp_image:
+                contents = image.file.read()  # Read the contents
+                temp_image.write(contents)
+                image_path = temp_image.name
+                print(image_path)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="No image found"
+            )
+
+        output = agent.invoke(
+            {
+                "image_path": image_path,
+                "input": "",
+                "chat_history": [],
+            }
+        )
+
+        if image_path:
+            os.remove(image_path)
+
+        return output
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 if __name__ == "__main__":
