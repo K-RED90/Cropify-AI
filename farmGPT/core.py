@@ -105,7 +105,9 @@ def fallback_response(llm: BaseChatModel, system_prompt: Optional[str] = None):
 
 
 class Recommendation(BaseModel):
-    description: str = Field(..., description="Description of the treatment recommendations")
+    description: str = Field(
+        ..., description="Description of the treatment recommendations"
+    )
     type: str = Field(
         ...,
         description="Type of recommendation (e.g., 'pesticide', 'organic treatment', 'cultural practice')",
@@ -121,18 +123,14 @@ class Pest(BaseModel):
     potential_damage: str = Field(
         ..., description="Potential damage caused by the pest"
     )
-    # recommendations: List[Recommendation] = Field(
-    #     ..., description="List of recommendations for controlling the pest"
-    # )
 
 
 class Disease(BaseModel):
     name: str = Field(..., description="Name of the disease")
     symptoms: str = Field(..., description="Symptoms of the disease")
-    # recommendations: List[Recommendation] = Field(
-    #     ..., description="List of recommendations for treating or managing the disease"
-    # )
-    potential_impact: str = Field(..., description="Potential impact of the disease on crop yield and quality")
+    potential_impact: str = Field(
+        ..., description="Potential impact of the disease on crop yield and quality"
+    )
 
 
 class PestOrDisease(BaseModel):

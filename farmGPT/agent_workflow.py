@@ -15,11 +15,15 @@ from .core import (
     Disease,
     PestOrDisease,
 )
-from .prompts import PEST_PROMPT, DISEASE_PROMPT, IMAGE_CLASSIFICATION_PROMPT
+from .prompts import (
+    PEST_PROMPT,
+    DISEASE_PROMPT,
+    IMAGE_CLASSIFICATION_PROMPT,
+    DEFAULT_MESSAGE,
+)
 from .tools import search_tool
 from langchain_core.runnables import Runnable
 from functools import partial
-
 
 
 class AgentState(TypedDict):
@@ -58,7 +62,6 @@ class AgentNodes(BaseModel):
                 model="claude-3-haiku-20240307", temperature=0.0
             )
             values["vision_tool"] = partial(pest_and_disease_tool, llm=vision_model)
-            print(values)
         return values
 
     def router(self, state: AgentState):
@@ -125,6 +128,17 @@ class AgentNodes(BaseModel):
             "images_analysis": output,
             "input": str(output.name) + " treatment OR control",
         }
+
+    def unrelated_image_node(self, state: AgentState) -> dict[str, AIMessage]:
+        """When the image is not related to crop pests or diseases.
+
+        Args:
+            state (AgentState): The state of the agent
+
+        Returns:
+            dict[str, AIMessage]: The response to the user's query
+        """
+        return {"agent_outcome": AIMessage(content=DEFAULT_MESSAGE)}
 
     def search_engine_node(self, state: AgentState) -> dict:
         """Search the input query using the search tool.
@@ -232,6 +246,7 @@ def compile_graph(llm: Optional[BaseChatModel] = None) -> Runnable:
     graph.add_node("fallback_node", nodes.fallback_node)
     graph.add_node("crop_disease", nodes.crop_disease_node)
     graph.add_node("crop_pest", nodes.crop_pest_node)
+    graph.add_node("unrelated_image", nodes.unrelated_image_node)
     graph.set_conditional_entry_point(
         nodes.router,
         {
@@ -239,7 +254,7 @@ def compile_graph(llm: Optional[BaseChatModel] = None) -> Runnable:
             "No": "fallback_node",
             "pest": "crop_pest",
             "disease": "crop_disease",
-            "other": END,
+            "other": "unrelated_image",
         },
     )
     graph.add_conditional_edges(
@@ -252,5 +267,6 @@ def compile_graph(llm: Optional[BaseChatModel] = None) -> Runnable:
     graph.add_edge("generate_response", END)
     graph.add_edge("agric_specialist", END)
     graph.add_edge("fallback_node", END)
+    graph.add_edge("unrelated_image", END)
     app = graph.compile() | (lambda x: x["agent_outcome"])
     return app

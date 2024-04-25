@@ -73,3 +73,7 @@ When an image is provided to you, you should carefully examine its content and v
 
 Remember, your task is to quickly categorize the image into one of the three specified categories, without providing any further details or recommendations. Your output should be concise and focused on the classification task at hand.
 """
+
+DEFAULT_MESSAGE = """
+Thank you for your image. Unfortunately, the image you provided does not appear to be related to agriculture or farming. As an AI assistant specializing in agricultural topics, I can only provide analysis and recommendations for images depicting crops, plant diseases, pests, or other farm-related subjects. Please upload an image relevant to agriculture or farming if you need assistance in those areas.
+"""
