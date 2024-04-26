@@ -1,6 +1,6 @@
 from typing import TypedDict, Optional, Type, Callable, Union, Dict
 from langgraph.graph import END, StateGraph
-from langchain_core.messages import BaseMessage, AIMessage
+from langchain_core.messages import BaseMessage, AIMessage, ToolMessage
 from langchain_core.pydantic_v1 import BaseModel, root_validator
 from langchain_core.language_models import BaseChatModel
 from .core import (
@@ -10,7 +10,6 @@ from .core import (
     rag_agent,
     fallback_response,
     pest_and_disease_tool,
-    encode_image,
     Pest,
     Disease,
     PestOrDisease,
@@ -24,6 +23,9 @@ from .prompts import (
 from .tools import search_tool
 from langchain_core.runnables import Runnable
 from functools import partial
+from logger import log_function_time
+from .utils import encode_image, json_to_markdown
+from concurrent.futures import ThreadPoolExecutor
 
 
 class AgentState(TypedDict):
@@ -64,6 +66,7 @@ class AgentNodes(BaseModel):
             values["vision_tool"] = partial(pest_and_disease_tool, llm=vision_model)
         return values
 
+    @log_function_time
     def router(self, state: AgentState):
         """Validate the user's input to determine if it is farm-related or not.
 
@@ -82,7 +85,7 @@ class AgentNodes(BaseModel):
             )
             if output.label == "pest":
                 return "pest"
-            elif output.label == "disease":
+            elif output.label == "crop":
                 return "disease"
             else:
                 return "other"
@@ -91,6 +94,7 @@ class AgentNodes(BaseModel):
             output = chain.invoke(state)
             return output.is_farm_related
 
+    @log_function_time
     def crop_disease_node(self, state: AgentState) -> dict[str, AIMessage]:
         """Identify the crop disease from the user's input.
 
@@ -107,10 +111,11 @@ class AgentNodes(BaseModel):
             schema=Disease,
         )
         return {
-            "images_analysis": output,
-            "input": str(output.name) + " treatment OR control",
+            "images_analysis": output.dict(),
+            "input": str(output.disease) + " treatment OR control",
         }
 
+    @log_function_time
     def crop_pest_node(self, state: AgentState) -> dict[str, AIMessage]:
         """Identify the crop pest from the user's input.
 
@@ -125,10 +130,11 @@ class AgentNodes(BaseModel):
             img_base64=image, prompt_template=PEST_PROMPT, schema=Pest
         )
         return {
-            "images_analysis": output,
-            "input": str(output.name) + " treatment OR control",
+            "images_analysis": output.dict(),
+            "input": str(output.pest) + " treatment OR control",
         }
 
+    @log_function_time
     def unrelated_image_node(self, state: AgentState) -> dict[str, AIMessage]:
         """When the image is not related to crop pests or diseases.
 
@@ -140,6 +146,7 @@ class AgentNodes(BaseModel):
         """
         return {"agent_outcome": AIMessage(content=DEFAULT_MESSAGE)}
 
+    @log_function_time
     def search_engine_node(self, state: AgentState) -> dict:
         """Search the input query using the search tool.
 
@@ -149,9 +156,17 @@ class AgentNodes(BaseModel):
         Returns:
             dict: The search results
         """
-        output = search_tool.invoke({"query": state["input"]})
-        return {"search_results": output}
+        if isinstance(state["input"], list):
+            with ThreadPoolExecutor() as executor:
+                output = executor.map(
+                    search_tool.invoke, [{"query": query} for query in state["input"]]
+                )
+            return {"search_results": list(output)}
+        else:
+            output = search_tool.invoke({"query": state["input"]})
+            return {"search_results": output}
 
+    @log_function_time
     def should_generate(self, state: AgentState) -> str:
         """Determine if the search results are relevant for query before generating a response.
 
@@ -173,6 +188,7 @@ class AgentNodes(BaseModel):
         else:
             raise ValueError("Invalid output from search_content_evaluator")
 
+    @log_function_time
     def generate_response(self, state: AgentState) -> dict[str, AIMessage]:
         """Generate a response to the user's query.
 
@@ -191,14 +207,16 @@ class AgentNodes(BaseModel):
             }
         )
         if state.get("images_analysis") is not None:
+            state["images_analysis"]["control and treatment"] = output.content
             return {
                 "agent_outcome": AIMessage(
-                    content=[{**state["images_analysis"].dict(), **output[0]["args"]}]
+                    content=json_to_markdown(state["images_analysis"])
                 )
             }
 
-        return {"agent_outcome": AIMessage(content=[output[0]["args"]])}
+        return {"agent_outcome": output}
 
+    @log_function_time
     def agric_specialist_node(self, state: AgentState) -> dict[str, AIMessage]:
         """Where the search results are not relevant, refer the user to another agent.
 
@@ -214,6 +232,7 @@ class AgentNodes(BaseModel):
         )
         return {"agent_outcome": output}
 
+    @log_function_time
     def fallback_node(self, state: AgentState) -> dict[str, AIMessage]:
         """Fallback to the default response when the search results are not farm or agriculture-related.
 

@@ -13,6 +13,7 @@ from langchain_core.runnables import (
     RunnableParallel,
 )
 from operator import itemgetter
+from logger import log_function_time
 
 
 class CropDashboard(BaseModel):
@@ -22,6 +23,7 @@ class CropDashboard(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+    @log_function_time
     def create_chain(
         self,
         farm_data: Dict,
