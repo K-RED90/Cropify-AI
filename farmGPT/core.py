@@ -8,11 +8,9 @@ from .prompts import (
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.pydantic_v1 import BaseModel, Field
-from typing import Literal, Optional, List, Type
-from langchain_core.output_parsers.openai_tools import JsonOutputToolsParser
+from typing import Literal, Optional, Type
 from langchain_core.messages import HumanMessage
 from langchain_core.output_parsers import PydanticOutputParser, StrOutputParser
-import base64
 from langchain_core.runnables import RunnableLambda
 
 
@@ -87,8 +85,8 @@ def rag_agent(llm: BaseChatModel, system_prompt: Optional[str] = None):
     )
     return (
         prompt
-        | llm.bind_tools(tools=[OutputSchema], tool_choice="OutputSchema")
-        | JsonOutputToolsParser()
+        | llm #.bind_tools(tools=[OutputSchema], tool_choice="OutputSchema")
+        # | JsonOutputToolsParser()
     )
 
 
@@ -115,7 +113,7 @@ class Recommendation(BaseModel):
 
 
 class Pest(BaseModel):
-    name: str = Field(..., description="name of the pest")
+    pest: str = Field(..., description="name of the pest")
     description: str = Field(
         ...,
         description="Description of the pest, including physical characteristics, behavior, and crops affected",
@@ -126,7 +124,7 @@ class Pest(BaseModel):
 
 
 class Disease(BaseModel):
-    name: str = Field(..., description="Name of the disease")
+    disease: str = Field(..., description="Name of the disease")
     symptoms: str = Field(..., description="Symptoms of the disease")
     potential_impact: str = Field(
         ..., description="Potential impact of the disease on crop yield and quality"
@@ -134,10 +132,10 @@ class Disease(BaseModel):
 
 
 class PestOrDisease(BaseModel):
-    """Use this schema to provide information about a pest, disease, or other issue identified in an image."""
+    """Use this schema to provide information about a pest, crop, or other issue identified in an image."""
 
-    label: Literal["pest", "disease", "other"] = Field(
-        ..., description="Type of the image"
+    label: Literal["pest", "crop", "other_image"] = Field(
+        ..., description="The type of issue identified in the image. If the image shows a pest, the label should be 'pest'. If the image shows a crop, the label should be 'crop'. If the image does not show a pest or crop, the label should be 'other_image'."
     )
 
 
@@ -173,18 +171,3 @@ def pest_and_disease_tool(
     return (
         llm | StrOutputParser() | RunnableLambda(extract_json_str) | pydantic_parser
     ).invoke(messages)
-
-
-from PIL import Image
-import io
-import base64
-
-
-def encode_image(image_path):
-    """Getting the base64 string"""
-    # Open the image file
-    with Image.open(image_path) as img:
-        with io.BytesIO() as output_bytes:
-            img.save(output_bytes, format="JPEG")
-            jpeg_data = output_bytes.getvalue()
-        return base64.b64encode(jpeg_data).decode("utf-8")

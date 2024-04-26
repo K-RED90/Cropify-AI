@@ -24,6 +24,9 @@ from pydantic import BaseModel
 from functools import lru_cache
 from typing import Optional
 import os
+from uuid import uuid4
+from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
 
 load_dotenv(override=True)
 
@@ -33,7 +36,7 @@ history = dict()
 
 # In-memory data storage
 farm_data: dict[str, FarmDataSchema] = {}
-weather_data: Optional[dict] = None
+# weather_data: Optional[dict] = None
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,21 +48,21 @@ app.add_middleware(
 
 
 # crops_data = {}
-# weather_data = {
-#     "detail_status": "broken clouds",
-#     "reference_time": "2024-04-13T15:52:48+00:00",
-#     "sunset_time": "2024-04-13T18:15:13+00:00",
-#     "sunrise_time": "2024-04-13T05:59:45+00:00",
-#     "wind": "1.59 m/s, direction: 167°",
-#     "humidity": "42%",
-#     "temperature": "34.7°C",
-#     "status": "Clouds",
-#     "rain": {},
-#     "heat_index": None,
-#     "clouds": "63%",
-#     "pressure": "1006 hPa",
-#     "precipitation_probability": None,
-# }
+weather_data = {
+    "detail_status": "broken clouds",
+    "reference_time": "2024-04-13T15:52:48+00:00",
+    "sunset_time": "2024-04-13T18:15:13+00:00",
+    "sunrise_time": "2024-04-13T05:59:45+00:00",
+    "wind": "1.59 m/s, direction: 167°",
+    "humidity": "42%",
+    "temperature": "34.7°C",
+    "status": "Clouds",
+    "rain": {},
+    "heat_index": None,
+    "clouds": "63%",
+    "pressure": "1006 hPa",
+    "precipitation_probability": None,
+}
 
 
 @lru_cache
@@ -94,7 +97,7 @@ weed_chain = partial(
 soil_chain = partial(
     dash.create_chain,
     prompt_template=SOIL_HEALTH_AND_CROP_MANAGEMENT_PROMPT,
-    structed_output=False,
+    structed_output=True,
     schema=SoilHealthAndCropManagementPlan,
 )
 
@@ -179,16 +182,16 @@ def get_soil_recommendations(farm_id: str):
 
 class Message(BaseModel):
     message: str
+    session_id: Optional[str] = uuid4().hex
 
 
-def graph(model_name: str = "gpt-3.5-turbo-0125", temperature: float = 0.5):
-    try:
-        from langchain_openai.chat_models import ChatOpenAI
-    except ImportError:
-        raise ImportError(
-            "Please install the openai plugin to use the default LLM. Run `pip install langchain-openai`"
-        )
-    llm = ChatOpenAI(model=model_name, temperature=temperature)
+def get_chat_history(session_id: str):
+    if session_id not in history:
+        history[session_id] = ChatMessageHistory()
+    return history[session_id]
+
+
+def graph(llm: Runnable = Depends(load_llm)):
     agent = compile_graph(llm=llm)
     return agent
 
@@ -196,12 +199,19 @@ def graph(model_name: str = "gpt-3.5-turbo-0125", temperature: float = 0.5):
 @app.post("/chat/")
 async def invoke(request: Message, agent: Runnable = Depends(graph)):
     try:
-        return agent.invoke(
+        runnable_with_history = RunnableWithMessageHistory(
+            runnable=agent,
+            input_messages_key="input",
+            history_messages_key="chat_history",
+            get_session_history=get_chat_history,
+        )
+        return runnable_with_history.invoke(
             {
                 "image_path": None,
                 "input": request.message,
                 "chat_history": [],
-            }
+            },
+            config={"configurable": {"session_id": request.session_id}},
         )
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -243,4 +253,4 @@ async def invoke_with_image(
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", port=8000, reload=True)
+    uvicorn.run("main:app", port=5000, reload=True)
