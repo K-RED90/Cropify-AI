@@ -27,6 +27,10 @@ import os
 from uuid import uuid4
 from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from schema.user import User
+from config.db import connect
+from bson import ObjectId 
+# import pprint
 
 load_dotenv(override=True)
 
@@ -46,6 +50,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+password = os.environ.get("MONGODB_PWD")
 
 # crops_data = {}
 weather_data = {
@@ -106,10 +111,62 @@ class WeatherSchema(BaseModel):
     lat: float
     lon: float
 
+client = connect
 
+# to list all the tables in the database
+# dbs = client.list_database_names()
+
+cropyAI_db = client["cropyAI"]
+
+dbs = client.list_database_names()
+
+
+print(dbs)
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Cropify API 🚀"}
+
+# connecting to the user collection
+collection = cropyAI_db.users
+@app.post("/create-user")
+def create_user(user: User):
+    user_dict = user.dict() 
+    user_email = user.email
+    finduser = collection.find_one({"email":user_email}).dict()
+
+    if finduser:
+        return {"message": "User already exists"}
+
+    inserted_id = collection.insert_one(user_dict).inserted_id
+    inserted_id_str = str(inserted_id)
+    return {"inserted_id": inserted_id_str }
+
+@app.get("/get-user/{user_id}")
+async def get_user(user_id: str):
+    obj_id = ObjectId(user_id)
+    find_user = collection.find_one({"_id": obj_id})
+
+    if find_user:
+        # Convert ObjectId to string before returning
+        find_user['_id'] = str(find_user['_id'])
+
+        return find_user
+    else:
+        return {"message": "User not found"}
+
+@app.post("/login")
+def login(email: str, password: str):
+    find_user = collection.find_one({"email": email, "password": password})
+    
+    if find_user:
+        # Convert ObjectId to string before returning
+        find_user['_id'] = str(find_user['_id'])
+        # Remove the password field before returning
+        find_user.pop("password", None)
+        return find_user
+    else:
+        return {"message": "Invalid credentials"}
+
 
 
 @app.post("/data")
@@ -136,7 +193,7 @@ def get_weather_data():
 def get_fertilizer_recommendations(farm_id: str):
     farm_data_obj = farm_data.get(farm_id)
     if farm_data_obj is None or weather_data is None:
-        raise HTTPException(
+        raise HTTPException( 
             status_code=404, detail="Farm data or weather data not found"
         )
     return fertilizer_chain(
