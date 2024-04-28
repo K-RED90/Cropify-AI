@@ -28,6 +28,8 @@ from uuid import uuid4
 from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from schema.user import User
+from schema.farm_data import FarmData
+from schema.weather import Weather
 from config.db import connect
 from bson import ObjectId 
 # import pprint
@@ -44,7 +46,7 @@ farm_data: dict[str, FarmDataSchema] = {}
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost", "http://127.0.0.1"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -126,25 +128,26 @@ print(dbs)
 def read_root():
     return {"message": "Welcome to the Cropify API 🚀"}
 
-# connecting to the user collection
-collection = cropyAI_db.users
+# connecting to the user user_collection
+user_collection = cropyAI_db.users
+farmData_collection = cropyAI_db.farm_data
 @app.post("/create-user")
 def create_user(user: User):
     user_dict = user.dict() 
     user_email = user.email
-    finduser = collection.find_one({"email":user_email}).dict()
+    finduser = user_collection.find_one({"email":user_email}).dict()
 
     if finduser:
         return {"message": "User already exists"}
 
-    inserted_id = collection.insert_one(user_dict).inserted_id
+    inserted_id = user_collection.insert_one(user_dict).inserted_id
     inserted_id_str = str(inserted_id)
     return {"inserted_id": inserted_id_str }
 
 @app.get("/get-user/{user_id}")
 async def get_user(user_id: str):
     obj_id = ObjectId(user_id)
-    find_user = collection.find_one({"_id": obj_id})
+    find_user = user_collection.find_one({"_id": obj_id})
 
     if find_user:
         # Convert ObjectId to string before returning
@@ -156,7 +159,7 @@ async def get_user(user_id: str):
 
 @app.post("/login")
 def login(email: str, password: str):
-    find_user = collection.find_one({"email": email, "password": password})
+    find_user = user_collection.find_one({"email": email, "password": password})
     
     if find_user:
         # Convert ObjectId to string before returning
@@ -168,18 +171,21 @@ def login(email: str, password: str):
         return {"message": "Invalid credentials"}
 
 
-
-@app.post("/data")
-def add_farm_data(farm_id: str, data: FarmDataSchema):
-    farm_data[farm_id] = data.model_dump()
-    return {"message": "Farm data added successfully"}
-
+@app.post("/farm-data")
+# def add_farm_data(farm_id: str, data: FarmDataSchema):
+#     farm_data[farm_id] = data.model_dump()
+#     return {"message": "Farm data added successfully"}
+def add_farm_data(farmData: FarmData):
+    farm_data_dict = farmData.dict() 
+    inserted_id = farmData_collection.insert_one(farm_data_dict).inserted_id
+    inserted_id_str = str(inserted_id)
+    return {"inserted_id": inserted_id_str }
 
 @app.post("/weather")
 def add_weather_data(data: WeatherSchema):
     global weather_data
     weather_data = GetWeatherDataByCordinates().invoke(data.dict())
-    return {"message": "Weather data added successfully"}
+    return {"message": "Weather data added successfully", "data":weather_data  }
 
 
 @app.get("/weather")
@@ -201,40 +207,90 @@ def get_fertilizer_recommendations(farm_id: str):
     )
 
 
-@app.get("/pest/{farm_id}")
-def get_pest_recommendations(farm_id: str):
-    farm_data_obj = farm_data.get(farm_id)
-    if farm_data_obj is None or weather_data is None:
-        raise HTTPException(
-            status_code=404, detail="Farm data or weather data not found"
+# @app.get("/pest/{farm_id}")
+# def get_pest_recommendations(farm_id: str):
+#     farm_data_obj = farm_data.get(farm_id)
+#     if farm_data_obj is None or weather_data is None:
+#         raise HTTPException(
+#             status_code=404, detail="Farm data or weather data not found"
+#         )
+#     return pest_chain(
+#         farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+#     )
+
+@app.get("/pest1/{farm_id}")
+def  get_pest_recommendations(farm_id):
+    obj_id = ObjectId(farm_id)
+    find_data = farmData_collection.find_one({"_id": obj_id})
+    
+    if find_data:
+        # Convert ObjectId to string before returning
+        find_data['_id'] = str(find_data['_id'])
+
+        return pest_chain(
+        farm_data={"farm_data": find_data, "weather_data": weather_data}
         )
-    return pest_chain(
-        farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
-    )
+
+    else:
+        return {"message": "Farm data not found"}
 
 
-@app.get("/weed/{farm_id}")
+# @app.get("/weed/{farm_id}")
+# def get_weed_recommendations(farm_id: str):
+#     farm_data_obj = farm_data.get(farm_id)
+#     if farm_data_obj is None or weather_data is None:
+#         raise HTTPException(
+#             status_code=404, detail="Farm data or weather data not found"
+#         )
+#     return weed_chain(
+#         farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+#     )
+
+@app.get("/weed1/{farm_id}")
 def get_weed_recommendations(farm_id: str):
-    farm_data_obj = farm_data.get(farm_id)
-    if farm_data_obj is None or weather_data is None:
-        raise HTTPException(
-            status_code=404, detail="Farm data or weather data not found"
+    obj_id = ObjectId(farm_id)
+    find_data = farmData_collection.find_one({"_id": obj_id})
+
+    if find_data:
+        # Convert ObjectId to string before returning
+        find_data['_id'] = str(find_data['_id'])
+
+        
+        return weed_chain(
+         farm_data={"farm_data": find_data, "weather_data": weather_data}
         )
-    return weed_chain(
-        farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
-    )
+
+    else:
+        return {"message": "Farm data not found"}
 
 
-@app.get("/soil/{farm_id}")
+# @app.get("/soil/{farm_id}")
+# def get_soil_recommendations(farm_id: str):
+#     farm_data_obj = farm_data.get(farm_id)
+#     if farm_data_obj is None or weather_data is None:
+#         raise HTTPException(
+#             status_code=404, detail="Farm data or weather data not found"
+#         )
+#     return soil_chain(
+#         farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+#     )
+
+@app.get("/soil1/{farm_id}")
 def get_soil_recommendations(farm_id: str):
-    farm_data_obj = farm_data.get(farm_id)
-    if farm_data_obj is None or weather_data is None:
-        raise HTTPException(
-            status_code=404, detail="Farm data or weather data not found"
-        )
-    return soil_chain(
-        farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+    obj_id = ObjectId(farm_id)
+    find_data = farmData_collection.find_one({"_id": obj_id})
+
+    if find_data:
+        # Convert ObjectId to string before returning
+        find_data['_id'] = str(find_data['_id'])
+
+        
+        return soil_chain(
+        farm_data={"farm_data": find_data, "weather_data": weather_data}
     )
+
+    else:
+        return {"message": "Farm data not found"}
 
 
 class Message(BaseModel):
