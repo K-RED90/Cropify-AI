@@ -181,6 +181,40 @@ def add_farm_data(farmData: FarmData):
     inserted_id_str = str(inserted_id)
     return {"inserted_id": inserted_id_str }
 
+@app.get("/farm-data/{crop_id}")
+def getCrop(crop_id: str):
+    obj_id = ObjectId(crop_id)
+    find_data = farmData_collection.find_one({"_id": obj_id})
+
+    if find_data:
+        # Convert ObjectId to string before returning
+        find_data['_id'] = str(find_data['_id'])
+
+        return {"data": find_data}
+    else:
+        return {"message": "can not find crop"}
+
+
+@app.get("/farm-data{user_id}")
+def getCrop(user_id:str):
+    d = farmData_collection.find({"user":user_id})
+    crops = []
+    for x in d:
+    
+        print(x)
+        x['_id'] = str(x['_id'])
+        crops.append(x)
+    
+    # crops = []
+    # for x in farmData_collection.find():
+    #     crops.append(x) 
+
+    if crops:
+        return {"data": crops}
+    else:
+        return {"message": "No crop found"}
+    
+
 @app.post("/weather")
 def add_weather_data(data: WeatherSchema):
     global weather_data
@@ -219,7 +253,7 @@ def get_fertilizer_recommendations(farm_id: str):
 #     )
 
 @app.get("/pest1/{farm_id}")
-def  get_pest_recommendations(farm_id):
+def get_pest_recommendations(farm_id):
     obj_id = ObjectId(farm_id)
     find_data = farmData_collection.find_one({"_id": obj_id})
     
@@ -246,22 +280,17 @@ def  get_pest_recommendations(farm_id):
 #         farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
 #     )
 
-@app.get("/weed1/{farm_id}")
-def get_weed_recommendations(farm_id: str):
-    obj_id = ObjectId(farm_id)
-    find_data = farmData_collection.find_one({"_id": obj_id})
+app.get("/farm-data")
+async def getAllCrops():
+    cursor = farmData_collection.find()  # Retrieve the cursor
+    crops = []
+    async for document in cursor:  # Iterate over the cursor asynchronously
+        crops.append(document)
 
-    if find_data:
-        # Convert ObjectId to string before returning
-        find_data['_id'] = str(find_data['_id'])
-
-        
-        return weed_chain(
-         farm_data={"farm_data": find_data, "weather_data": weather_data}
-        )
-
+    if crops:
+        return {"data": crops}  # Return the list of documents
     else:
-        return {"message": "Farm data not found"}
+        return {"message": "No crops found"}
 
 
 # @app.get("/soil/{farm_id}")

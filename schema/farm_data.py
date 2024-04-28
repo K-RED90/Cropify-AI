@@ -6,7 +6,7 @@ class FarmData(BaseModel):
     diseases:List[str]
     soil_type: str
     soil_ph:str
-    pct_soil_moisture:float
+    pct_soil_moisture:str
     soil_fertility:str
     user:str
 
