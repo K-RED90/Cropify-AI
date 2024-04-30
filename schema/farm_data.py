@@ -9,6 +9,9 @@ class FarmData(BaseModel):
     pct_soil_moisture:str
     soil_fertility:str
     user:str
+    lon:str
+    lat:str 
+    
 
 
 

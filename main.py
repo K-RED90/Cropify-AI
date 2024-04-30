@@ -12,6 +12,7 @@ from dashboard.schemas.ai_recommendations import (
     SoilHealthAndCropManagementPlan,
 )
 from functools import partial
+import logging
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 import tempfile
 from fastapi import status
@@ -28,6 +29,7 @@ from uuid import uuid4
 from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from schema.user import User
+from schema.recommended import Recommended
 from schema.farm_data import FarmData
 from schema.weather import Weather
 from config.db import connect
@@ -123,7 +125,6 @@ cropyAI_db = client["cropyAI"]
 dbs = client.list_database_names()
 
 
-print(dbs)
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Cropify API 🚀"}
@@ -131,6 +132,7 @@ def read_root():
 # connecting to the user user_collection
 user_collection = cropyAI_db.users
 farmData_collection = cropyAI_db.farm_data
+recommended_collection = cropyAI_db.recommended
 @app.post("/create-user")
 def create_user(user: User):
     user_dict = user.dict() 
@@ -201,7 +203,7 @@ def getCrop(user_id:str):
     crops = []
     for x in d:
     
-        print(x)
+       
         x['_id'] = str(x['_id'])
         crops.append(x)
     
@@ -214,6 +216,26 @@ def getCrop(user_id:str):
     else:
         return {"message": "No crop found"}
     
+@app.post("/recommended")
+def recommended(data:Recommended):
+    recommended_dict = data.dict() 
+    inserted_id = recommended_collection.insert_one(recommended_dict).inserted_id
+    inserted_id_str = str(inserted_id)
+    return {"inserted_id": inserted_id_str}
+
+@app.get("/recommended{crop_id}")
+def getRecommended(crop_id:str):
+    d = recommended_collection.find({"crop":crop_id})
+    recommends = []
+    print(d)
+    for x in d:
+        print("xx")
+        x['_id'] = str(x['_id'])
+        recommends.append(x)
+    if recommends:
+        return {"data": recommends}
+    else:
+        return {"message": "No data"}
 
 @app.post("/weather")
 def add_weather_data(data: WeatherSchema):
@@ -260,13 +282,18 @@ def get_pest_recommendations(farm_id):
     if find_data:
         # Convert ObjectId to string before returning
         find_data['_id'] = str(find_data['_id'])
-
-        return pest_chain(
-        farm_data={"farm_data": find_data, "weather_data": weather_data}
-        )
-
+        data = {
+            "lat": find_data["lat"],
+            "lon": find_data["lon"]
+        }
+        print(data)
+        # weather = GetWeatherDataByCordinates().invoke(data)
+        # return pest_chain(
+        # farm_data={"farm_data": find_data, "weather": weather_data}
+        # )
+        return {"m":"mssd"}
     else:
-        return {"message": "Farm data not found"}
+        return {"message": "Farm data not found"} 
 
 
 # @app.get("/weed/{farm_id}")
@@ -313,18 +340,22 @@ def get_soil_recommendations(farm_id: str):
         # Convert ObjectId to string before returning
         find_data['_id'] = str(find_data['_id'])
 
+        # weather = GetWeatherDataByCordinates().invoke(data)
+        print(weather)
+    #     return soil_chain(
+    #     farm_data={"farm_data": find_data, "weather_data": weather}
+    # )
         
-        return soil_chain(
-        farm_data={"farm_data": find_data, "weather_data": weather_data}
-    )
+        return {"m": "soil"} 
 
     else:
         return {"message": "Farm data not found"}
+code = uuid4().hex
 
 
 class Message(BaseModel):
     message: str
-    session_id: Optional[str] = uuid4().hex
+    # session_id: Optional[str] = uuid4().hex
 
 
 def get_chat_history(session_id: str):
@@ -338,7 +369,7 @@ def graph(llm: Runnable = Depends(load_llm)):
     return agent
 
 
-@app.post("/chat/")
+@app.post("/chat")
 async def invoke(request: Message, agent: Runnable = Depends(graph)):
     try:
         runnable_with_history = RunnableWithMessageHistory(
@@ -353,7 +384,7 @@ async def invoke(request: Message, agent: Runnable = Depends(graph)):
                 "input": request.message,
                 "chat_history": [],
             },
-            config={"configurable": {"session_id": request.session_id}},
+            config={"configurable": {"session_id": code}}, 
         )
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -362,13 +393,13 @@ async def invoke(request: Message, agent: Runnable = Depends(graph)):
 @app.post("/image")
 async def invoke_with_image(
     image: UploadFile = File(...), agent: Runnable = Depends(graph)
-):
+): 
     try:
         if image.file:  # Check if image.file is not None
             with tempfile.NamedTemporaryFile(delete=False) as temp_image:
                 contents = image.file.read()  # Read the contents
                 temp_image.write(contents)
-                image_path = temp_image.name
+                image_path = temp_image.name 
                 print(image_path)
         else:
             raise HTTPException(
