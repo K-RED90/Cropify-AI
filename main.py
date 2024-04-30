@@ -402,7 +402,7 @@ async def invoke_with_image(
                 image_path = temp_image.name 
                 print(image_path)
         else:
-            raise HTTPException(
+            raise HTTPException( 
                 status_code=status.HTTP_400_BAD_REQUEST, detail="No image found"
             )
 
