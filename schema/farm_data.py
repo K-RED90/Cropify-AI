@@ -11,6 +11,10 @@ class FarmData(BaseModel):
     user:str
     lon:str
     lat:str 
+    nutrient_form:str
+    fertilizer_type: str
+    frequency_of_application:str
+
     
 
 

@@ -341,7 +341,7 @@ def get_soil_recommendations(farm_id: str):
         find_data['_id'] = str(find_data['_id'])
 
         # weather = GetWeatherDataByCordinates().invoke(data)
-        print(weather)
+        #print(weather)
     #     return soil_chain(
     #     farm_data={"farm_data": find_data, "weather_data": weather}
     # )
