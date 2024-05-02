@@ -8,9 +8,9 @@ class FarmData(BaseModel):
     soil_ph:str
     pct_soil_moisture:str
     soil_fertility:str
-    user:str
-    lon:str
-    lat:str 
+    # user:str
+    # lon:float
+    # lat:float
     nutrient_form:str
     fertilizer_type: str
     frequency_of_application:str

@@ -274,26 +274,48 @@ def get_fertilizer_recommendations(farm_id: str):
 #         farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
 #     )
 
-@app.get("/pest1/{farm_id}")
-def get_pest_recommendations(farm_id):
-    obj_id = ObjectId(farm_id)
-    find_data = farmData_collection.find_one({"_id": obj_id})
+# @app.get("/pest1/{farm_id}")
+# def get_pest_recommendations(farm_id):
+#     obj_id = ObjectId(farm_id)
+#     find_data = farmData_collection.find_one({"_id": obj_id})
     
-    if find_data:
-        # Convert ObjectId to string before returning
-        find_data['_id'] = str(find_data['_id'])
-        data = {
-            "lat": find_data["lat"],
-            "lon": find_data["lon"]
-        }
-        print(data)
-        # weather = GetWeatherDataByCordinates().invoke(data)
-        # return pest_chain(
-        # farm_data={"farm_data": find_data, "weather": weather_data}
-        # )
-        return {"m":"mssd"}
-    else:
-        return {"message": "Farm data not found"} 
+#     if find_data:
+#         # Convert ObjectId to string before returning
+#         find_data['_id'] = str(find_data['_id'])
+
+#         data = {
+#             "lat": find_data["lat"],
+#             "lon": find_data["lon"]
+#         }
+#         print(data)
+#         weather = GetWeatherDataByCordinates().invoke(data)
+#         return pest_chain(
+#         farm_data={"farm_data": find_data, "weather": weather_data}
+#         )
+#         # return {"m":"mssd"}
+#     else:
+#         return {"message": "Farm data not found"} 
+
+@app.post("/pest1/{lat}/{lon}")
+def get_pest_recommendations(farm_data: FarmData, lat:float, lon:float):
+    
+    data = {
+        "lat":lat,
+        "lon":lon
+    }
+    
+    # weather = GetWeatherDataByCordinates().invoke(data)
+
+    print(farm_data)
+    
+    # return pest_chain(
+    #     farm_data={"farm_data": farm_data, "weather": weather_data}
+    #     )
+    return weed_chain(
+        farm_data={"farm_data": farm_data, "weather_data": weather_data} 
+    )
+    
+    # return {"m":"s"}
 
 
 # @app.get("/weed/{farm_id}")
@@ -340,13 +362,13 @@ def get_soil_recommendations(farm_id: str):
         # Convert ObjectId to string before returning
         find_data['_id'] = str(find_data['_id'])
 
-        # weather = GetWeatherDataByCordinates().invoke(data)
-        #print(weather)
-    #     return soil_chain(
-    #     farm_data={"farm_data": find_data, "weather_data": weather}
-    # )
+        weather = GetWeatherDataByCordinates().invoke(data)
+        print(weather)
+        return soil_chain(
+        farm_data={"farm_data": find_data, "weather_data": weather}
+    )
         
-        return {"m": "soil"} 
+        # return {"m": "soil"} 
 
     else:
         return {"message": "Farm data not found"}
