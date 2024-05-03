@@ -24,47 +24,67 @@ dashboard = CropDashboard(llm=llm)
 
 router = APIRouter()
 
+
 @router.post("/fertilizer_recommendation")
-async def get_fertilizer_recommendation(farm_data: FarmDataSchema, weather_data: Weather):
+async def get_fertilizer_recommendation(
+    farm_data: FarmDataSchema, weather_data: Weather
+):
     try:
         fertilizer_chain = dashboard.create_chain(
             prompt_template=FERTILIZER_SYSTEM_PROMPT, structed_output=False
         )
         recommendation = fertilizer_chain.invoke(
-            {"farm_data": farm_data.dict(), "weather_data": weather_data.dict()}
+            {
+                "farm_data": farm_data.model_dump(),
+                "weather_data": weather_data.model_dump(),
+            }
         )
         return {"recommendation": recommendation}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.post("/pest_and_disease_control")
-async def get_pest_and_disease_control(farm_data: FarmDataSchema, weather_data: Weather):
+async def get_pest_and_disease_control(
+    farm_data: FarmDataSchema, weather_data: Weather
+):
     try:
         pest_chain = dashboard.create_chain(
-            prompt_template=PEST_AND_DISEASE_PROMPT, structed_output=True, schema=PestAndDiseaseControl
+            prompt_template=PEST_AND_DISEASE_PROMPT,
+            structed_output=True,
+            schema=PestAndDiseaseControl,
         )
         control_plan = pest_chain.invoke(
-            {"farm_data": farm_data.dict(), "weather_data": weather_data.dict()}
+            {
+                "farm_data": farm_data.model_dump(),
+                "weather_data": weather_data.model_dump(),
+            }
         )
         return control_plan
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/weed_control")
 async def get_weed_control(farm_data: FarmDataSchema, weather_data: Weather):
     try:
         weed_chain = dashboard.create_chain(
-            prompt_template=WEEDS_CONTROL_PROMPT, structed_output=True, schema=WeedControlRecommendations
+            prompt_template=WEEDS_CONTROL_PROMPT,
+            structed_output=True,
+            schema=WeedControlRecommendations,
         )
         control_plan = weed_chain.invoke(
-            {"farm_data": farm_data.dict(), "weather_data": weather_data.dict()}
+            {"farm_data": farm_data.model_dump(), "weather_data": weather_data.model_dump()}
         )
         return control_plan
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.post("/soil_health_and_crop_management")
-async def get_soil_health_and_crop_management(farm_data: FarmDataSchema, weather_data: Weather):
+async def get_soil_health_and_crop_management(
+    farm_data: FarmDataSchema, weather_data: Weather
+):
     try:
         soil_chain = dashboard.create_chain(
             prompt_template=SOIL_HEALTH_AND_CROP_MANAGEMENT_PROMPT,
@@ -72,7 +92,10 @@ async def get_soil_health_and_crop_management(farm_data: FarmDataSchema, weather
             schema=SoilHealthAndCropManagementPlan,
         )
         management_plan = soil_chain.invoke(
-            {"farm_data": farm_data.dict(), "weather_data": weather_data.dict()}
+            {
+                "farm_data": farm_data.model_dump(),
+                "weather_data": weather_data.model_dump(),
+            }
         )
         return management_plan
     except Exception as e:

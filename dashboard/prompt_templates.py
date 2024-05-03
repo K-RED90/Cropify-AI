@@ -18,8 +18,6 @@ The crop is {crop}, the pests present are {pests} and the diseases present are {
 
 Provide your recommendations with the following sections in paragraphs without bulleting or numbering:
 
-Risk factors for {pests}:
-Risk factors for {diseases}:
 Prevention Recommendations:
 Organic Treatments:
 Chemical Treatments:

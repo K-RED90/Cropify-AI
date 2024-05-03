@@ -1,16 +1,12 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Literal, List, Optional
-from langchain_core.pydantic_v1 import BaseModel as BaseModel_V1
+from langchain_core.pydantic_v1 import BaseModel as BaseModel_V1, Field
 import json
 
 
 class PestsAndDiseasesSchema(BaseModel):
-    pests: List[str] | str | None = Field(
-        None, title="Pests", description="pests affecting the crop"
-    )
-    diseases: List[str] | str | None = Field(
-        None, title="Diseases", description="diseases affecting the crop"
-    )
+    pests: str | None = None
+    diseases: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -23,9 +19,8 @@ class PestsAndDiseasesSchema(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "pests": ["Aphids", "Thrips", "Whiteflies"],
-                "diseases": ["Powdery Mildew", "Downy Mildew", "Fusarium Wilt"],
-                "damage": "Yellowing of leaves, stunted growth, and curling of leaves",
+                "pests": "Aphids, Thrips, Whiteflies",
+                "diseases": "Powdery Mildew, Downy Mildew, Fusarium Wilt"
             }
         }
 
@@ -38,27 +33,15 @@ class SoilSchema(BaseModel):
         "Neutral (6.6–7.3)",
         "Alkaline (7.4-9)",
         "Strongly alkaline: > 9.0",
-    ] = Field(
-        description="a measure of the acidity or alkalinity of soil and is measured in pH units.",
-    )
-    pct_soil_moisture: float = Field(
-        description="the water that is held in the spaces between soil particles.",
-        ge=0,
-        le=100,
-    )
-    soil_fertility: Literal["Low", "Medium", "High"] = Field(
-        description="the ability of soil to provide essential nutrients to plants.",
-    )
+    ]
+    pct_soil_moisture: float
+    soil_fertility: Literal["Low", "Medium", "High"]
 
 
 class FarmDataSchema(BaseModel):
-    crop: str = Field(..., description="Name of the crop")
-    soil: SoilSchema = Field(..., description="Soil information")
-    pests_and_diseases: Optional[PestsAndDiseasesSchema] = Field(
-        description="Pests and diseases affecting the crop"
-    )
-
-
+    crop: str
+    soil: SoilSchema
+    pests_and_diseases: Optional[PestsAndDiseasesSchema] = None
 
 class PestAndDiseasePrevention(BaseModel_V1):
     """Extract recommendations for pest and disease prevention based on farm data."""
@@ -75,17 +58,8 @@ class PestAndDiseaseTreatment(BaseModel_V1):
     chemical: str = Field(description="chemical treatments for pest and disease")
 
 
-class PestAndDiseaseCauses(BaseModel_V1):
-    """Extract causes of pest and disease based on farm data."""
-
-    causes_of_pests: List[str] = Field(description="Causes of pests")
-    causes_of_diseases: List[str] = Field(description="Causes of diseases")
-
-
 class PestAndDiseaseControl(BaseModel_V1):
     """Extract recommendations for pest and disease control based on farm data."""
-
-    causes: PestAndDiseaseCauses
     prevention: PestAndDiseasePrevention
     treatment: PestAndDiseaseTreatment
 

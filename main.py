@@ -58,10 +58,6 @@ password = os.environ.get("MONGODB_PWD")
 
 # crops_data = {}
 weather_data = {
-    "detail_status": "broken clouds",
-    "reference_time": "2024-04-13T15:52:48+00:00",
-    "sunset_time": "2024-04-13T18:15:13+00:00",
-    "sunrise_time": "2024-04-13T05:59:45+00:00",
     "wind": "1.59 m/s, direction: 167°",
     "humidity": "42%",
     "temperature": "34.7°C",

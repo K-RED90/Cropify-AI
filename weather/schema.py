@@ -1,21 +1,11 @@
 from typing import Optional, Union
 from pydantic import BaseModel, validator
 
-
-class Rain(BaseModel):
-    pass
-
-
 class Weather(BaseModel):
-    detail_status: str
-    reference_time: str
-    sunset_time: str
-    sunrise_time: str
+    status: Optional[str] = None
     wind: str
     humidity: str
     temperature: str
-    status: str
-    rain: Rain
     heat_index: Optional[Union[float, str, None]] = None
     clouds: str
     pressure: str

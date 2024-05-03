@@ -28,10 +28,13 @@ class GetWeatherDataByCityName(BaseOpenWeatherMap):
 
     def _run(self, city_name):
         mgr = self.owm.weather_manager()
-        observation = mgr.weather_at_place(city_name)
-        w = observation.weather
-        climate_data = format_weather_info(w)
-        return climate_data
+        try:
+            observation = mgr.weather_at_place(city_name)
+            w = observation.weather
+            climate_data = format_weather_info(w)
+            return climate_data
+        except Exception as e:
+            return f"Cannot find the weather data for the city {city_name}. Check the city name."
 
     async def _arun(self, *args: Any, **kwargs: Any):
         return await asyncify(self._run, cancellable=True)(*args, **kwargs)
