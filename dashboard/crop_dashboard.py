@@ -14,7 +14,7 @@ from langchain_core.runnables import (
 )
 from operator import itemgetter
 from logger import log_function_time
-from langchain_core.runnables import Runnable
+from langchain_core.runnables import Runnable, RunnableBranch
 
 
 class CropDashboard(BaseModel):
@@ -31,7 +31,7 @@ class CropDashboard(BaseModel):
         schema: BaseModel = None,
     ) -> Runnable:
         prompt = ChatPromptTemplate.from_template(prompt_template)
-        base_chain = (
+        chain = (
             RunnableParallel(
                 {
                     "farm_data": itemgetter("farm_data")
@@ -41,21 +41,31 @@ class CropDashboard(BaseModel):
             )
             | (lambda x: {**x["farm_data"], **x["weather_data"]})
             | prompt
-            | self.llm
-        )
-
-        if structed_output:
-            if schema is None:
-                raise ValueError("Schema is required for structured output")
-            chain = (
-                base_chain
-                | (lambda x: [HumanMessage(content=x.content)])
-                | self.llm.bind_tools(
+            | (
+                self.llm
+                if schema is None
+                else self.llm.bind_tools(
                     tools=[convert_to_openai_tool(schema)], tool_choice=schema.__name__
                 )
-                | JsonOutputToolsParser()
-                | (lambda x: x[0]["args"])
             )
-        else:
-            chain = base_chain | StrOutputParser()
+            | (StrOutputParser() if schema is None else JsonOutputToolsParser())
+            | RunnableBranch(
+                (lambda x: isinstance(x, list), lambda x: x[0]["args"]), (lambda x: x)
+            )
+        )
+
+        # if structed_output:
+        #     if schema is None:
+        #         raise ValueError("Schema is required for structured output")
+        #     chain = (
+        #         base_chain
+        #         | (lambda x: [HumanMessage(content=x.content)])
+        #         | self.llm.bind_tools(
+        #             tools=[convert_to_openai_tool(schema)], tool_choice=schema.__name__
+        #         )
+        #         | JsonOutputToolsParser()
+        #         # | (lambda x: x[0]["args"])
+        #     )
+        # else:
+        #     chain = base_chain | StrOutputParser()
         return chain

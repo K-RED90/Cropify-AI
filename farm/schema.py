@@ -123,18 +123,6 @@ class SoilHealthRecommendations(BaseModel_V1):
     tillage_practices: List[str]
     organic_matter_management: str
 
-
-class CropNutrientManagement(BaseModel_V1):
-    """
-    Recommendations for crop nutrient management.
-    """
-
-    macronutrient_requirements: str
-    micronutrient_requirements: str
-    fertilization_program: str
-    organic_vs_synthetic_considerations: str
-
-
 class IntegratedCropManagement(BaseModel_V1):
     """
     Recommendations for integrated crop management.
@@ -142,7 +130,6 @@ class IntegratedCropManagement(BaseModel_V1):
 
     irrigation_scheduling: str
     irrigation_techniques: str
-    pest_and_disease_control: str
     harvest_and_post_harvest: str
 
 
@@ -152,5 +139,36 @@ class SoilHealthAndCropManagementPlan(BaseModel_V1):
     """
 
     soil_health_recommendations: SoilHealthRecommendations
-    crop_nutrient_management: CropNutrientManagement
     integrated_crop_management: IntegratedCropManagement
+
+
+class ChemicalTreatment(BaseModel_V1):
+    """
+    Represents a chemical treatment recommendation for pest and disease control.
+    """
+    product_name: str = Field(..., description="The commercial name of the chemical product.")
+    application_rate: str = Field(..., description="The recommended application rate for the chemical product.")
+    safety_precautions: str = Field(..., description="The safety precautions associated with the chemical product.")
+class OrganicTreatment(BaseModel_V1):
+    """
+    Represents an organic treatment recommendation for pest and disease control.
+    """
+    treatment_name: str = Field(..., description="The name or description of the organic treatment.")
+    application_rate: str = Field(..., description="The recommended application rate for the organic treatment.")
+    safety_precautions: str = Field(..., description="The safety precautions associated with the organic treatment.")
+    
+class PreventionRecommendation(BaseModel_V1):
+    """
+    Represents recommendations for preventive measures against pests and diseases.
+    """
+    cultural_practices: List[str] = Field(default_factory=list, description="A list of recommended cultural practices for prevention.")
+    biological_control: List[str] = Field(default_factory=list, description="A list of recommended biological control methods for prevention.")
+    physical_control: List[str] = Field(default_factory=list, description="A list of recommended physical control methods for prevention.")
+
+class PestDiseaseControlRecommendations(BaseModel_V1):
+    """
+    The structured output schema for pest and disease control recommendations. The output should follow this schema to ensure consistency and compatibility with downstream processes.
+    """
+    prevention_recommendations: List[str] = Field(..., description="A list of Recommendations for preventive measures against pests and diseases.")
+    organic_treatments: List[OrganicTreatment] = Field(..., description="A list of recommended organic treatments for pest and disease control.")
+    chemical_treatments: List[ChemicalTreatment] = Field(..., description="A list of recommended chemical treatments for pest and disease control.")

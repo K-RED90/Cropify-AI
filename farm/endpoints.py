@@ -9,6 +9,7 @@ from .schema import (
     PestAndDiseaseControl,
     WeedControlRecommendations,
     SoilHealthAndCropManagementPlan,
+    PestDiseaseControlRecommendations
 )
 from .schema import FarmDataSchema
 from weather.schema import Weather
@@ -19,7 +20,7 @@ from models import load_llm
 router = APIRouter()
 
 # Initialize the LLM and CropDashboard
-llm = load_llm(model="gpt-3.5-turbo-0613")
+llm = load_llm(model="gpt-3.5-turbo-0125")
 dashboard = CropDashboard(llm=llm)
 
 router = APIRouter()
@@ -52,7 +53,7 @@ async def get_pest_and_disease_control(
         pest_chain = dashboard.create_chain(
             prompt_template=PEST_AND_DISEASE_PROMPT,
             structed_output=True,
-            schema=PestAndDiseaseControl,
+            schema=PestDiseaseControlRecommendations,
         )
         control_plan = pest_chain.invoke(
             {
