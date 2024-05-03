@@ -32,6 +32,6 @@ def flatten_nested_dict(nested_dict):
         elif isinstance(value, list):
             result[key] = ", ".join(map(str, value))
         else:
-            result[key] = value
+            result[key] = value 
     
     return result

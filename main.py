@@ -12,6 +12,7 @@ from dashboard.schemas.ai_recommendations import (
     SoilHealthAndCropManagementPlan,
 )
 from functools import partial
+import logging
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 import tempfile
 from fastapi import status
@@ -27,6 +28,13 @@ import os
 from uuid import uuid4
 from langchain_community.chat_message_histories.in_memory import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from schema.user import User
+from schema.recommended import Recommended
+from schema.farm_data import FarmData
+from schema.weather import Weather
+from config.db import connect
+from bson import ObjectId 
+# import pprint
 
 load_dotenv(override=True)
 
@@ -40,12 +48,13 @@ farm_data: dict[str, FarmDataSchema] = {}
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost", "http://127.0.0.1"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+password = os.environ.get("MONGODB_PWD")
 
 # crops_data = {}
 weather_data = {
@@ -132,6 +141,15 @@ class WeatherSchema(BaseModel):
     lat: float
     lon: float
 
+client = connect
+
+# to list all the tables in the database
+# dbs = client.list_database_names()
+
+cropyAI_db = client["cropyAI"]
+
+dbs = client.list_database_names()
+
 
 @app.get("/")
 def read_root() -> dict:
@@ -143,22 +161,113 @@ def read_root() -> dict:
     """
     return {"message": "Welcome to the Cropify API 🚀"}
 
+# connecting to the user user_collection
+user_collection = cropyAI_db.users
+farmData_collection = cropyAI_db.farm_data
+recommended_collection = cropyAI_db.recommended
+@app.post("/create-user")
+def create_user(user: User):
+    user_dict = user.dict() 
+    user_email = user.email
+    finduser = user_collection.find_one({"email":user_email}).dict()
 
-@app.post("/data")
-def add_farm_data(farm_id: str, data: FarmDataSchema) -> dict:
-    """
-    Add farm data to the API.
+    if finduser:
+        return {"message": "User already exists"}
 
-    Args:
-        farm_id (str): The unique identifier for the farm.
-        data (FarmDataSchema): The farm data to be added.
+    inserted_id = user_collection.insert_one(user_dict).inserted_id
+    inserted_id_str = str(inserted_id)
+    return {"inserted_id": inserted_id_str }
 
-    Returns:
-        dict: A success message indicating that the farm data was added.
-    """
-    farm_data[farm_id] = data.model_dump()
-    return {"message": "Farm data added successfully"}
+@app.get("/get-user/{user_id}")
+async def get_user(user_id: str):
+    obj_id = ObjectId(user_id)
+    find_user = user_collection.find_one({"_id": obj_id})
 
+    if find_user:
+        # Convert ObjectId to string before returning
+        find_user['_id'] = str(find_user['_id'])
+
+        return find_user
+    else:
+        return {"message": "User not found"}
+
+@app.post("/login")
+def login(email: str, password: str):
+    find_user = user_collection.find_one({"email": email, "password": password})
+    
+    if find_user:
+        # Convert ObjectId to string before returning
+        find_user['_id'] = str(find_user['_id'])
+        # Remove the password field before returning
+        find_user.pop("password", None)
+        return find_user
+    else:
+        return {"message": "Invalid credentials"}
+
+
+@app.post("/farm-data")
+# def add_farm_data(farm_id: str, data: FarmDataSchema):
+#     farm_data[farm_id] = data.model_dump()
+#     return {"message": "Farm data added successfully"}
+def add_farm_data(farmData: FarmData):
+    farm_data_dict = farmData.dict() 
+    inserted_id = farmData_collection.insert_one(farm_data_dict).inserted_id
+    inserted_id_str = str(inserted_id)
+    return {"inserted_id": inserted_id_str }
+
+@app.get("/farm-data/{crop_id}")
+def getCrop(crop_id: str):
+    obj_id = ObjectId(crop_id)
+    find_data = farmData_collection.find_one({"_id": obj_id})
+
+    if find_data:
+        # Convert ObjectId to string before returning
+        find_data['_id'] = str(find_data['_id'])
+
+        return {"data": find_data}
+    else:
+        return {"message": "can not find crop"}
+
+
+@app.get("/farm-data{user_id}")
+def getCrop(user_id:str):
+    d = farmData_collection.find({"user":user_id})
+    crops = []
+    for x in d:
+    
+       
+        x['_id'] = str(x['_id'])
+        crops.append(x)
+    
+    # crops = []
+    # for x in farmData_collection.find():
+    #     crops.append(x) 
+
+    if crops:
+        return {"data": crops}
+    else:
+        return {"message": "No crop found"}
+    
+@app.post("/recommended")
+def recommended(data:Recommended):
+    recommended_dict = data.dict() 
+    inserted_id = recommended_collection.insert_one(recommended_dict).inserted_id
+    inserted_id_str = str(inserted_id)
+    return {"inserted_id": inserted_id_str}
+
+@app.get("/recommended{crop_id}")
+def getRecommended(crop_id:str):
+    d = recommended_collection.find({"crop":crop_id})
+    recommends = []
+    print(d)
+    for x in d:
+        print("xx")
+        x['_id'] = str(x['_id'])
+        recommends.append(x)
+    if recommends:
+        return {"data": recommends}
+    else:
+        return {"message": "No data"}
 
 @app.post("/weather")
 def add_weather_data(data: WeatherSchema) -> dict:
@@ -173,7 +282,7 @@ def add_weather_data(data: WeatherSchema) -> dict:
     """
     global weather_data
     weather_data = GetWeatherDataByCordinates().invoke(data.dict())
-    return {"message": "Weather data added successfully"}
+    return {"message": "Weather data added successfully", "data":weather_data  }
 
 
 @app.get("/weather")
@@ -208,7 +317,7 @@ def get_fertilizer_recommendations(farm_id: str) -> dict:
     """
     farm_data_obj = farm_data.get(farm_id)
     if farm_data_obj is None or weather_data is None:
-        raise HTTPException(
+        raise HTTPException( 
             status_code=404, detail="Farm data or weather data not found"
         )
     return fertilizer_chain(
@@ -216,82 +325,122 @@ def get_fertilizer_recommendations(farm_id: str) -> dict:
     )
 
 
-@app.get("/pest/{farm_id}")
-def get_pest_recommendations(farm_id: str) -> dict:
-    """
-    Get pest management recommendations for a specific farm.
+# @app.get("/pest/{farm_id}")
+# def get_pest_recommendations(farm_id: str):
+#     farm_data_obj = farm_data.get(farm_id)
+#     if farm_data_obj is None or weather_data is None:
+#         raise HTTPException(
+#             status_code=404, detail="Farm data or weather data not found"
+#         )
+#     return pest_chain(
+#         farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+#     )
 
-    Args:
-        farm_id (str): The unique identifier of the farm.
+# @app.get("/pest1/{farm_id}")
+# def get_pest_recommendations(farm_id):
+#     obj_id = ObjectId(farm_id)
+#     find_data = farmData_collection.find_one({"_id": obj_id})
+    
+#     if find_data:
+#         # Convert ObjectId to string before returning
+#         find_data['_id'] = str(find_data['_id'])
 
-    Returns:
-        dict: The pest management recommendations for the specified farm.
+#         data = {
+#             "lat": find_data["lat"],
+#             "lon": find_data["lon"]
+#         }
+#         print(data)
+#         weather = GetWeatherDataByCordinates().invoke(data)
+#         return pest_chain(
+#         farm_data={"farm_data": find_data, "weather": weather_data}
+#         )
+#         # return {"m":"mssd"}
+#     else:
+#         return {"message": "Farm data not found"} 
 
-    Raises:
-        HTTPException: If the farm data or weather data is not found, a 404 Not Found error is raised.
-    """
-    farm_data_obj = farm_data.get(farm_id)
-    if farm_data_obj is None or weather_data is None:
-        raise HTTPException(
-            status_code=404, detail="Farm data or weather data not found"
-        )
-    return pest_chain(
-        farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
-    )
+@app.post("/pest1/{lat}/{lon}")
+def get_pest_recommendations(farm_data: FarmData, lat:float, lon:float):
+    
+    data = {
+        "lat":lat,
+        "lon":lon
+    }
+    
+    # weather = GetWeatherDataByCordinates().invoke(data)
 
-
-@app.get("/weed/{farm_id}")
-def get_weed_recommendations(farm_id: str) -> dict:
-    """
-    Get weed management recommendations for a specific farm.
-
-    Args:
-        farm_id (str): The unique identifier of the farm.
-
-    Returns:
-        dict: The weed management recommendations for the specified farm.
-
-    Raises:
-        HTTPException: If the farm data or weather data is not found, a 404 Not Found error is raised.
-    """
-    farm_data_obj = farm_data.get(farm_id)
-    if farm_data_obj is None or weather_data is None:
-        raise HTTPException(
-            status_code=404, detail="Farm data or weather data not found"
-        )
+    print(farm_data)
+    
+    # return pest_chain(
+    #     farm_data={"farm_data": farm_data, "weather": weather_data}
+    #     )
     return weed_chain(
-        farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+        farm_data={"farm_data": farm_data, "weather_data": weather_data} 
     )
+    
+    # return {"m":"s"}
 
 
-@app.get("/soil/{farm_id}")
-def get_soil_recommendations(farm_id: str) -> dict:
-    """
-    Get soil management recommendations for a specific farm.
+# @app.get("/weed/{farm_id}")
+# def get_weed_recommendations(farm_id: str):
+#     farm_data_obj = farm_data.get(farm_id)
+#     if farm_data_obj is None or weather_data is None:
+#         raise HTTPException(
+#             status_code=404, detail="Farm data or weather data not found"
+#         )
+#     return weed_chain(
+#         farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+#     )
 
-    Args:
-        farm_id (str): The unique identifier of the farm.
+app.get("/farm-data")
+async def getAllCrops():
+    cursor = farmData_collection.find()  # Retrieve the cursor
+    crops = []
+    async for document in cursor:  # Iterate over the cursor asynchronously
+        crops.append(document)
 
-    Returns:
-        dict: The soil management recommendations for the specified farm.
+    if crops:
+        return {"data": crops}  # Return the list of documents
+    else:
+        return {"message": "No crops found"}
 
-    Raises:
-        HTTPException: If the farm data or weather data is not found, a 404 Not Found error is raised.
-    """
-    farm_data_obj = farm_data.get(farm_id)
-    if farm_data_obj is None or weather_data is None:
-        raise HTTPException(
-            status_code=404, detail="Farm data or weather data not found"
-        )
-    return soil_chain(
-        farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+
+# @app.get("/soil/{farm_id}")
+# def get_soil_recommendations(farm_id: str):
+#     farm_data_obj = farm_data.get(farm_id)
+#     if farm_data_obj is None or weather_data is None:
+#         raise HTTPException(
+#             status_code=404, detail="Farm data or weather data not found"
+#         )
+#     return soil_chain(
+#         farm_data={"farm_data": farm_data_obj, "weather_data": weather_data}
+#     )
+
+@app.get("/soil1/{farm_id}")
+def get_soil_recommendations(farm_id: str):
+    obj_id = ObjectId(farm_id)
+    find_data = farmData_collection.find_one({"_id": obj_id})
+
+    if find_data:
+        # Convert ObjectId to string before returning
+        find_data['_id'] = str(find_data['_id'])
+
+        weather = GetWeatherDataByCordinates().invoke(data)
+        print(weather)
+        return soil_chain(
+        farm_data={"farm_data": find_data, "weather_data": weather}
     )
+        
+        # return {"m": "soil"} 
+
+    else:
+        return {"message": "Farm data not found"}
+code = uuid4().hex
 
 
 class Message(BaseModel):
 
     message: str
-    session_id: Optional[str] = uuid4().hex
+    # session_id: Optional[str] = uuid4().hex
 
 
 def get_chat_history(session_id: str) -> ChatMessageHistory:
@@ -323,21 +472,8 @@ def graph(llm: Runnable = Depends(load_llm)) -> Runnable:
     return agent
 
 
-@app.post("/chat/")
-async def invoke(request: Message, agent: Runnable = Depends(graph)) -> dict:
-    """
-    Handle a chat request and invoke the agent graph with the provided message.
-
-    Args:
-        request (Message): The request data containing the chat message and session_id.
-        agent (Runnable): The compiled agent graph to invoke.
-
-    Returns:
-        dict: The agent's response to the chat message.
-
-    Raises:
-        HTTPException: If an exception occurs during the invocation process, a 400 Bad Request error is raised with the exception details.
-    """
+@app.post("/chat")
+async def invoke(request: Message, agent: Runnable = Depends(graph)):
     try:
         runnable_with_history = RunnableWithMessageHistory(
             runnable=agent,
@@ -351,7 +487,7 @@ async def invoke(request: Message, agent: Runnable = Depends(graph)) -> dict:
                 "input": request.message,
                 "chat_history": [],
             },
-            config={"configurable": {"session_id": request.session_id}},
+            config={"configurable": {"session_id": code}}, 
         )
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -360,29 +496,16 @@ async def invoke(request: Message, agent: Runnable = Depends(graph)) -> dict:
 @app.post("/image")
 async def invoke_with_image(
     image: UploadFile = File(...), agent: Runnable = Depends(graph)
-):
-    """
-    Handle a request with an uploaded image and invoke the agent graph with the image.
-
-    Args:
-        image (UploadFile): The uploaded image file.
-        agent (Runnable): The compiled agent graph to invoke.
-
-    Returns:
-        dict: The agent's response to the image.
-
-    Raises:
-        HTTPException: If no image is found in the request or an exception occurs during the invocation process, a 400 Bad Request error is raised with the respective details.
-    """
+): 
     try:
         if image.file:  # Check if image.file is not None
             with tempfile.NamedTemporaryFile(delete=False) as temp_image:
                 contents = image.file.read()  # Read the contents
                 temp_image.write(contents)
-                image_path = temp_image.name
+                image_path = temp_image.name 
                 print(image_path)
         else:
-            raise HTTPException(
+            raise HTTPException( 
                 status_code=status.HTTP_400_BAD_REQUEST, detail="No image found"
             )
 
