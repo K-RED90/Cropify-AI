@@ -14,11 +14,11 @@ from langchain_core.runnables import (
 )
 from operator import itemgetter
 from logger import log_function_time
+from langchain_core.runnables import Runnable
 
 
 class CropDashboard(BaseModel):
     llm: Optional[BaseChatModel] = Field(default_factory=load_llm)
-    weather_api: Optional[Any] = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -26,11 +26,10 @@ class CropDashboard(BaseModel):
     @log_function_time
     def create_chain(
         self,
-        farm_data: Dict,
         prompt_template,
         structed_output: bool = False,
         schema: BaseModel = None,
-    ):
+    ) -> Runnable:
         prompt = ChatPromptTemplate.from_template(prompt_template)
         base_chain = (
             RunnableParallel(
@@ -58,4 +57,4 @@ class CropDashboard(BaseModel):
             )
         else:
             chain = base_chain | StrOutputParser()
-        return chain.invoke(farm_data)
+        return chain

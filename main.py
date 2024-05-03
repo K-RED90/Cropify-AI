@@ -17,7 +17,7 @@ from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 import tempfile
 from fastapi import status
 from fastapi.middleware.cors import CORSMiddleware
-from dashboard.schemas.farm_data import FarmDataSchema
+from schema.farm_data import FarmDataSchema
 from dashboard.weather_tools.get_weather_data import GetWeatherDataByCordinates
 from farmGPT.agent_workflow import compile_graph
 from langchain_core.runnables import Runnable
