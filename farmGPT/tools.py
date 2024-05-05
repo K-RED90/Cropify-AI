@@ -1,4 +1,4 @@
-from typing import Any, Coroutine
+from typing import Any, Coroutine, Type
 from langchain_community.tools.ddg_search import DuckDuckGoSearchRun
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.callbacks import CallbackManagerForToolRun
@@ -10,7 +10,13 @@ from asyncer import asyncify
 load_dotenv()
 
 
+class InputSchema(BaseModel):
+    query: str = Field(..., description="The query to the search engine.")
+
 class CustomDDGSearch(DuckDuckGoSearchRun):
+    name = "search_engine"
+    description = "A search engine tool that retrieves real-time information from the internet for farm-related queries."
+    args_schema: Type[BaseModel] = InputSchema
     def _run(
         self, query: str, run_manager: CallbackManagerForToolRun | None = None
     ) -> str:
@@ -22,13 +28,12 @@ class CustomDDGSearch(DuckDuckGoSearchRun):
         return await asyncify(self._run, cancellable=True)(*args, **kwargs)
 
 
-class InputSchema(BaseModel):
-    query: str = Field(..., description="The query to the search engine.")
-
-
-@tool("search_tool", return_direct=True, args_schema=InputSchema)
+@tool("search_engine", return_direct=True, args_schema=InputSchema)
 def search_tool(query: str):
-    """Useful tool to search the web for farm-related queries."""
+    """
+    A powerful web search tool designed to retrieve relevant information from the internet for farm-related queries.
+    Use this for all farm search queries
+    """
     ddg = CustomDDGSearch()
     tavily = TavilySearchResults()
     search_engine = tavily.with_fallbacks([ddg])

@@ -1,6 +1,5 @@
 from .prompts import (
     INITIAL_MESSAGE_VALIDATION,
-    FARM_LLM_SYSTEM_PROMPT,
     EVALUATION_PROMPT,
     RAG_PROMPT,
     FALLBACK_PROMPT,
@@ -11,53 +10,60 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from typing import Literal, Optional, Type
 from langchain_core.messages import HumanMessage
 from langchain_core.output_parsers import PydanticOutputParser, StrOutputParser
-from langchain_core.runnables import RunnableLambda
+from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain.tools.render import render_text_description_and_args
+from langchain_core.tools import BaseTool
+from datetime import datetime
 
 
-class ValidatorOutput(BaseModel):
-    """Use this tool to validate the user's input"""
+class RouterSchema(BaseModel):
+    """Use this tool to route farm-related queries to the appropriate AI assistant."""
 
-    is_farm_related: Literal["Yes", "No"] = Field(
-        ..., description="Whether the given query is farm-related or not."
+    route: Literal["farm_query", "weather", "other"] = Field(
+        ...,
+        description="The route to the appropriate AI assistant based on the farmer's query.",
     )
 
 
-def input_validator(llm: BaseChatModel, prompt_template: Optional[str] = None):
-    prompt_template = prompt_template or INITIAL_MESSAGE_VALIDATION
-    prompt = ChatPromptTemplate.from_template(prompt_template)
-    chain = prompt | llm.with_structured_output(
-        ValidatorOutput, method="function_calling"
+def input_validator(llm: BaseChatModel, system_template: Optional[str] = None):
+    prompt_template = system_template or INITIAL_MESSAGE_VALIDATION
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", prompt_template),
+            MessagesPlaceholder(variable_name="chat_history", optional=True),
+            MessagesPlaceholder(variable_name="messages", optional=True),
+        ]
     )
+    chain = prompt | llm.with_structured_output(RouterSchema, method="function_calling")
     return chain
 
 
-def farm_llm(llm: BaseChatModel, system_prompt: Optional[str] = None):
-    system_prompt = system_prompt or FARM_LLM_SYSTEM_PROMPT
+def farm_chain(
+    llm: BaseChatModel,
+    system_prompt: str,
+    tools: Optional[list[BaseTool]] = None,
+    tool_choice: Optional[str] = "auto",
+):
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
-            MessagesPlaceholder(variable_name="chat_histoy"),
-            ("user", "Input: {input}"),
+            MessagesPlaceholder(variable_name="chat_history"),
+            MessagesPlaceholder(variable_name="messages"),
         ]
     )
-    return prompt | llm
-
-
-class QueryContextEvaluation(BaseModel):
-    """Use this tool to evaluate the relevance of text for answering farm-related queries"""
-
-    decision: Literal["relevant", "not relevant"] = Field(
-        ...,
-        description="The relevance of the context for answering a farm-related query.",
+    return prompt | (
+        llm if not tools else llm.bind_tools(tools=tools, tool_choice=tool_choice)
     )
 
 
-def search_content_evaluator(llm: BaseChatModel, prompt_template: Optional[str] = None):
+def evaluator(
+    llm: BaseChatModel,
+    tool: BaseTool | BaseTool,
+    prompt_template: Optional[str] = None,
+):
     prompt_template = prompt_template or EVALUATION_PROMPT
     prompt = ChatPromptTemplate.from_template(prompt_template)
-    chain = prompt | llm.with_structured_output(
-        QueryContextEvaluation, method="function_calling"
-    )
+    chain = prompt | llm.bind_tools(tools=[tool], tool_choice=tool.__name__)
     return chain
 
 
@@ -85,21 +91,25 @@ def rag_agent(llm: BaseChatModel, system_prompt: Optional[str] = None):
     )
     return (
         prompt
-        | llm #.bind_tools(tools=[OutputSchema], tool_choice="OutputSchema")
+        | llm  # .bind_tools(tools=[OutputSchema], tool_choice="OutputSchema")
         # | JsonOutputToolsParser()
     )
 
 
-def fallback_response(llm: BaseChatModel, system_prompt: Optional[str] = None):
+def fallback_response(
+    llm: BaseChatModel,
+    system_prompt: Optional[str] = None,
+    tools: Optional[list[BaseTool]] = None,
+):
     system_prompt = system_prompt or FALLBACK_PROMPT
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
             MessagesPlaceholder(variable_name="chat_history"),
-            ("user", "Input: {input}"),
+            MessagesPlaceholder(variable_name="messages"),
         ]
     )
-    return prompt | llm
+    return prompt | (llm if not tools else llm.bind_tools(tools=tools))
 
 
 class Recommendation(BaseModel):
@@ -135,7 +145,8 @@ class PestOrDisease(BaseModel):
     """Use this schema to provide information about a pest, crop, or other issue identified in an image."""
 
     label: Literal["pest", "crop", "other_image"] = Field(
-        ..., description="The type of issue identified in the image. If the image shows a pest, the label should be 'pest'. If the image shows a crop, the label should be 'crop'. If the image does not show a pest or crop, the label should be 'other_image'."
+        ...,
+        description="The type of issue identified in the image. If the image shows a pest, the label should be 'pest'. If the image shows a crop, the label should be 'crop'. If the image does not show a pest or crop, the label should be 'other_image'.",
     )
 
 
@@ -171,3 +182,21 @@ def pest_and_disease_tool(
     return (
         llm | StrOutputParser() | RunnableLambda(extract_json_str) | pydantic_parser
     ).invoke(messages)
+
+
+def meteorologist_chain(llm, system_prompt: str, tools: list[BaseTool]):
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            MessagesPlaceholder(variable_name="messages"),
+        ]
+    )
+    return (
+        RunnablePassthrough.assign(
+            location="Accra,GH",
+            date_time=datetime.now().strftime("%A, %B %d, %Y %H:%M:%S"),
+        )
+        | prompt
+        | (llm if not tools else llm.bind_tools(tools=tools))
+    )

@@ -1,4 +1,4 @@
-from dashboard.weather_tools import (
+from weather_tools import (
     GetCurrentLocation,
     GetWeatherDataByCityName,
     GetWeatherDataByCordinates,
