@@ -1,3 +1,6 @@
+from functools import lru_cache
+
+@lru_cache
 def load_llm(model: str = "gpt-3.5-turbo-0125", temperature=0.0):
     try:
         from langchain_openai.chat_models import ChatOpenAI

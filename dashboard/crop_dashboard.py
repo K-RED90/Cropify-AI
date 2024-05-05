@@ -3,9 +3,9 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.language_models import BaseChatModel
 from .utils import load_llm, flatten_nested_dict
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers.openai_functions import JsonOutputFunctionsParser
+from langchain_core.output_parsers.openai_tools import JsonOutputToolsParser
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.utils.function_calling import convert_to_openai_function
+from langchain_core.utils.function_calling import convert_to_openai_tool
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import (
     RunnableLambda,
@@ -14,11 +14,11 @@ from langchain_core.runnables import (
 )
 from operator import itemgetter
 from logger import log_function_time
+from langchain_core.runnables import Runnable, RunnableBranch
 
 
 class CropDashboard(BaseModel):
     llm: Optional[BaseChatModel] = Field(default_factory=load_llm)
-    weather_api: Optional[Any] = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -26,13 +26,12 @@ class CropDashboard(BaseModel):
     @log_function_time
     def create_chain(
         self,
-        farm_data: Dict,
         prompt_template,
         structed_output: bool = False,
         schema: BaseModel = None,
-    ):
+    ) -> Runnable:
         prompt = ChatPromptTemplate.from_template(prompt_template)
-        base_chain = (
+        chain = (
             RunnableParallel(
                 {
                     "farm_data": itemgetter("farm_data")
@@ -42,20 +41,31 @@ class CropDashboard(BaseModel):
             )
             | (lambda x: {**x["farm_data"], **x["weather_data"]})
             | prompt
-            | self.llm
+            | (
+                self.llm
+                if schema is None
+                else self.llm.bind_tools(
+                    tools=[convert_to_openai_tool(schema)], tool_choice=schema.__name__
+                )
+            )
+            | (StrOutputParser() if schema is None else JsonOutputToolsParser())
+            | RunnableBranch(
+                (lambda x: isinstance(x, list), lambda x: x[0]["args"]), (lambda x: x)
+            )
         )
 
-        if structed_output:
-            if schema is None:
-                raise ValueError("Schema is required for structured output")
-            chain = (
-                base_chain
-                | (lambda x: [HumanMessage(content=x.content)])
-                | self.llm.bind_functions(
-                    functions=[convert_to_openai_function(schema)]
-                )
-                | JsonOutputFunctionsParser()
-            )
-        else:
-            chain = base_chain | StrOutputParser()
-        return chain.invoke(farm_data)
+        # if structed_output:
+        #     if schema is None:
+        #         raise ValueError("Schema is required for structured output")
+        #     chain = (
+        #         base_chain
+        #         | (lambda x: [HumanMessage(content=x.content)])
+        #         | self.llm.bind_tools(
+        #             tools=[convert_to_openai_tool(schema)], tool_choice=schema.__name__
+        #         )
+        #         | JsonOutputToolsParser()
+        #         # | (lambda x: x[0]["args"])
+        #     )
+        # else:
+        #     chain = base_chain | StrOutputParser()
+        return chain
