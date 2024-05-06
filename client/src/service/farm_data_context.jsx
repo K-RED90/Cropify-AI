@@ -1,5 +1,7 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import axios from "axios"
+
+
 export const farm_data_context = createContext(null)
 
 
@@ -9,6 +11,8 @@ const Farm_data_provider = ({children}) => {
         latitude: "",
         longitude:""
     })
+    
+  const [weather, setWeather] = useState(null)
 
 
     const getLocation = useCallback(()=>{
@@ -20,7 +24,7 @@ const Farm_data_provider = ({children}) => {
           var latitude = position.coords.latitude;
           var longitude = position.coords.longitude;
           
-            setLocation({ ...location, llongitude: longitude, latitude: latitude })
+            setLocation({ ...location, longitude: longitude, latitude: latitude })
             
             console.log(location)
 
@@ -31,18 +35,37 @@ const Farm_data_provider = ({children}) => {
       }
 },[location, setLocation])
 
-const get_weather = async ()=>{
-    try {
-        const response = await axios.get(`/current-location/${location.latitude}/${location.longitude}`)
-    } catch (error) {
-        
+useEffect(()=>{
+  getLocation()
+}, [])
+  
+const get_weather = useCallback(async()=>{
+  try {
+    const response = await axios.get(`http://localhost:8000/weather/weather-by-coordinates/${location.latitude}/${location.longitude}`)
+  if (response.status === 200){
+    const data = response.data
+    setWeather(data)
+  }
+  } catch (error) {
+    console.log(error)
+  }
+},[location.latitude, location.longitude])
+  
+  useEffect(() =>{
+    if(location.latitude){
+      //get_weather()
     }
-    
+  },[location.latitude])
+  
+  if (weather) {
+  console.log(weather)
 }
 
 
+
+
   return (
-    <farm_data_context.Provider value={{}}>
+    <farm_data_context.Provider value={{location}}>
       {children}
     </farm_data_context.Provider>
   )
