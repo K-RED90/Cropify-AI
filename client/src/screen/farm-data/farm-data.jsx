@@ -1,10 +1,16 @@
 import React from 'react'
-
+import DashboardLayout from '../../components/dashboardLayout/dashboardLayout'
+import "./farm-data.css"
 const Farm_data = () => {
   return (
-    <div>
-      
-    </div>
+    <DashboardLayout>
+      <section className='farm_data'>
+        <div className='weather'>
+
+        </div>
+        
+      </section>
+    </DashboardLayout>
   )
 }
 

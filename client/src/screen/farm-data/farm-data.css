@@ -1,0 +1,13 @@
+.farm_data{
+    width: 97%;
+    margin: auto;
+    height: 100vh;
+}
+
+.farm_data > .weather{
+    width: 100%;
+    height: 200px;
+    background-color: var(--sidebar-background);
+    margin-top: 1rem;
+    border-radius: 16px;
+}

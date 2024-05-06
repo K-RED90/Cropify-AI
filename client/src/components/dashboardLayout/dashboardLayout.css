@@ -5,12 +5,12 @@
 }
 
 .sidebar{
-    flex-basis: 20%;
+    width: 20%;
     height: 100vh;
     background-color: var(--sidebar-background);
 }
 
 .children{
-    flex-basis: 80;
+    width: 80%;
     background-color: var(--children-background)
 }
