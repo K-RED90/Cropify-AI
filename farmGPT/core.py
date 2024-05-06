@@ -47,8 +47,8 @@ def farm_chain(
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
-            MessagesPlaceholder(variable_name="chat_history"),
-            MessagesPlaceholder(variable_name="messages"),
+            MessagesPlaceholder(variable_name="chat_history", optional=True),
+            MessagesPlaceholder(variable_name="messages", Optional=True),
         ]
     )
     return prompt | (
@@ -199,4 +199,16 @@ def meteorologist_chain(llm, system_prompt: str, tools: list[BaseTool]):
         )
         | prompt
         | (llm if not tools else llm.bind_tools(tools=tools))
+    )
+
+
+def specialist_chain(
+    llm: BaseChatModel,
+    system_prompt: str,
+    tools: Optional[list[BaseTool]] = None,
+    tool_choice: Optional[str] = "auto",
+):
+    prompt = ChatPromptTemplate.from_template(system_prompt)
+    return prompt | (
+        llm if not tools else llm.bind_tools(tools=tools, tool_choice=tool_choice)
     )
