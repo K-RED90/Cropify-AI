@@ -19,11 +19,6 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-# Create a new database
-engine = create_engine("sqlite:///chat_history.db", echo=True)
-Session = sessionmaker(bind=engine)
-session = Session()
-
 model = load_llm(model="gpt-3.5-turbo-0125")
 graph = compile_graph(llm=model)
 
@@ -190,10 +185,6 @@ async def invoke_with_image(image: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
-
-def load_db():
-    Base.metadata.create_all(engine)
-    return session
 
 
 # Retrieve all conversation history from chat_history.db

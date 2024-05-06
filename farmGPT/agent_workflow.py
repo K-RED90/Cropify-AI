@@ -86,7 +86,7 @@ class AgentNodes(BaseModel):
                 )
             vision_model = ChatAnthropic(
                 model="claude-3-haiku-20240307", temperature=0.0
-            )
+            )  #TODO Change to gpt-4-turbo
         values["vision_tool"] = partial(pest_and_disease_tool, llm=vision_model)
         values["llm"] = llm
         values["chain"] = partial(farm_chain, llm=llm)
