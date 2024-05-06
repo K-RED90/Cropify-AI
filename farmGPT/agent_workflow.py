@@ -11,6 +11,7 @@ from .core import (
     Pest,
     Disease,
     PestOrDisease,
+    specialist_chain,
 )
 from .prompts import (
     PEST_PROMPT,
@@ -293,7 +294,9 @@ class AgentNodes(BaseModel):
 
     @log_function_time
     def agric_specialist(self, state: AgentState) -> dict[str, AIMessage]:
-        chain: Runnable = self.chain(
+
+        chain: Runnable = specialist_chain(
+            llm=self.llm,
             system_prompt=ANSWER_REFINER,
             tools=[AnswerRefinement],
             tool_choice=AnswerRefinement.__name__,

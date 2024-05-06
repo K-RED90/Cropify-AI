@@ -5,8 +5,8 @@ from langchain_core.runnables import Runnable
 from langchain_community.chat_message_histories.sql import SQLChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.runnables.utils import ConfigurableFieldSpec
-from pydantic import BaseModel
-from typing import Optional, Callable, List
+from pydantic import BaseModel, Field
+from typing import Optional, Callable, List, Dict
 from uuid import uuid4
 import tempfile
 from langchain_core.messages import HumanMessage, AIMessage
@@ -73,8 +73,20 @@ def create_session_factory() -> Callable[[str], BaseChatMessageHistory]:
     return get_chat_history
 
 
+class ResponseBody(BaseModel):
+    content: str | List[str | Dict]
+    additional_kwargs: Dict = {}
+    response_metadata: Dict = {}
+    type: str = "ai"
+    name: str = None
+    id: str = None
+    example: bool = False
+    tool_calls: List = []
+    invalid_tool_calls: List = []
+
+
 class Message(BaseModel):
-    messages: List[HumanMessage]
+    message: str
 
 
 runnable_with_history = RunnableWithMessageHistory(
@@ -100,10 +112,10 @@ runnable_with_history = RunnableWithMessageHistory(
             is_shared=True,
         ),
     ],
-).with_types(input_type=Message)
+).with_types(input_type=[HumanMessage], output_type=AIMessage)
 
 
-@router.post("/chat/", response_model=AIMessage)
+@router.post("/chat/", response_model=ResponseBody)
 async def invoke(
     request: Message,
     user_id: Optional[str] = uuid4().hex,
@@ -123,18 +135,19 @@ async def invoke(
         HTTPException: If an exception occurs during the invocation process, a 400 Bad Request error is raised with the exception details.
     """
     try:
-        return runnable_with_history.invoke(
-            {"image_path": None, "messages": request.messages},
+        response = runnable_with_history.invoke(
+            {"image_path": None, "messages": [HumanMessage(content=request.message)]},
             config={
                 "configurable": {"user_id": user_id, "conversation_id": conversation_id}
             },
         )
+        return ResponseBody(**response.dict())
     except Exception as e:
         raise e
         # raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.post("/image")
+@router.post("/image", response_model=ResponseBody)
 async def invoke_with_image(image: UploadFile = File(...)):
     """
     Handle a request with an uploaded image and invoke the agent graph with the image.
@@ -172,7 +185,7 @@ async def invoke_with_image(image: UploadFile = File(...)):
         if image_path:
             os.remove(image_path)
 
-        return output
+        return ResponseBody(**output.dict())
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
