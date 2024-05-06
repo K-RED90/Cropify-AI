@@ -1,6 +1,6 @@
 import React from 'react'
 
-const DashboardLayout = () => {
+const Sidebar = () => {
   return (
     <div>
       
@@ -8,4 +8,6 @@ const DashboardLayout = () => {
   )
 }
 
-export default DashboardLayout
+export default Sidebar
+
+

@@ -1,10 +1,10 @@
 import React from 'react'
-
+import DashboardLayout from "../../components/dashboardLayout/dashboardLayout"
 const Chat = () => {
   return (
-    <div>
+    <DashboardLayout>
       
-    </div>
+    </DashboardLayout>
   )
 }
 

@@ -1,0 +1,129 @@
+.home {
+    width: 100vw;
+    height: 100vh;
+    background-color: #043232;
+    ;
+}
+
+.home > .header {
+    width: 100%;
+    height: 10vh;
+    background-color: #f2f3f3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.home > .header > .logo {
+    margin-top: 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.home > .header > .logo > h1 {
+    font-weight: 700;
+    font-size: 30px;
+    color: #043232;
+}
+
+.logo > .image {
+    width: 60px;
+    height: 90%;
+    margin: auto;
+    margin-left: 4rem;
+}
+
+.logo > .image > img {
+    width: 100%;
+    object-fit: contain;
+}
+
+.header > button {
+    width: 200px;
+    background-color: #043232;
+    font-weight: 700;
+    font-size: 20px;
+    border-radius: 12px;
+    padding: 10px;
+    color: white;
+    margin-right: 4rem;
+    transition: color ease-in;
+    cursor: pointer;
+}
+
+.header > button:hover {
+    background-color: #13f44f;
+}
+
+.body {
+    width: 80vw;
+    height: 90vh;
+    margin: auto;
+    background-color: #043232;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+
+}
+
+.left {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.left > .strong {
+    font-weight: 900;
+    font-size: 40px;
+    color: white;
+    margin-bottom: 24px;
+    line-height: 3rem;
+
+}
+
+strong {
+    font-weight: 900;
+    font-size: 40px;
+    color: white;
+    line-height: 3rem;
+
+}
+
+.technology {
+    color: white;
+    font-weight: 400;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.right {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.right > img {
+    width: 100%;
+    object-fit: cover;
+}
+
+.left > button {
+    width: 200px;
+    background-color: #13f44f;
+    font-weight: 700;
+    font-size: 20px;
+    border-radius: 12px;
+    padding: 10px;
+    margin-top: 2rem;
+    color: white;
+    cursor: pointer;
+}
