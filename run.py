@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from farm.endpoints import router as farm_router
-from weather.endpoints import router as weather_router
-from farmGPT.endpoints import router as farmGPT_router
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
+from farm.endpoints import router as farm_router
+from weather.endpoints import router as weather_router
+from farmGPT.endpoints import router as farmGPT_router
 
 
 app = FastAPI()
