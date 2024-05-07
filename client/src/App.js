@@ -5,6 +5,7 @@ import Homepage from "./screen/homepage/homepage";
 import Chat from "./screen/chat/chat";
 import Farmdata from "./screen/farm-data/farm-data";
 import Control from "./screen/control/control";
+import AddPicture from "./screen/add-picture/add-pic";
 
 import {
   createBrowserRouter,
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard/farm-data",
     element: <Farmdata/>,
+  },
+  {
+    path: "/dashboard/image",
+    element: <AddPicture/>,
   },
   {
     path: "/dashboard/control",

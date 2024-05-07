@@ -15,9 +15,10 @@ const Control = () => {
     soil_crop_management,
   } = useContext(farm_data_context)
   
-    const { preventionRecommendations, organicTreatments, chemicalTreatments } = pestDiseaseInfo;
-    const { soilHealthRecommendations, integratedCropManagement } = soilCropInfo;
-     const { earlyGrowth, midSeason, lateSeason } = weedInfo;
+   
+  if (fertilizer_control) {
+    console.log("fert", fertilizer_control)
+  }
   return (
     <DashboardLayout>
       <div style={{
@@ -192,75 +193,5 @@ const Control = () => {
     </DashboardLayout>
   )
 }
-
-const pestDiseaseInfo = {
-  preventionRecommendations: [
-    "Implement crop rotation with non-host crops to disrupt pest and disease cycles.",
-    "Utilize companion planting with pest-repellent plants like marigolds to deter pests naturally.",
-    "Incorporate organic mulches to suppress weed growth and create a barrier against pests.",
-    "Practice proper irrigation management to avoid water stress and reduce susceptibility to diseases."
-  ],
-  organicTreatments: [
-    {
-      "treatment_name": "Neem oil",
-      "application_rate": "Dilute 2-4 tablespoons of neem oil in 1 gallon of water and apply as a foliar spray every 7-14 days.",
-      "safety_precautions": "Wear protective clothing, avoid contact with eyes, and keep out of reach of children and pets."
-    },
-    {
-      "treatment_name": "Garlic and chili pepper spray",
-      "application_rate": "Mix 2-3 cloves of crushed garlic and 1-2 chopped chili peppers in 1 quart of water, let it sit overnight, strain, and spray on plants every 7-10 days.",
-      "safety_precautions": "Avoid inhalation of spray mist, wear gloves during preparation and application, and wash hands thoroughly after use."
-    }
-  ],
-  chemicalTreatments: []
-};
-
-
-const soilCropInfo = {
-  soilHealthRecommendations: {
-    soil_amendments: [
-      "Lime to raise pH level",
-      "Organic compost for nutrient enrichment"
-    ],
-    cover_cropping_strategies: [
-      "Planting legumes like clover or vetch to fix nitrogen",
-      "Growing grasses like ryegrass for soil cover"
-    ],
-    tillage_practices: [
-      "Minimum tillage to reduce soil disturbance",
-      "Use of cover crops to minimize erosion"
-    ],
-    organic_matter_management: "Regular addition of compost and crop residues"
-  },
-  integratedCropManagement: {
-    irrigation_scheduling: "Implement drip irrigation for precise water delivery",
-    irrigation_techniques: "Use of mulching to retain soil moisture",
-    harvest_and_post_harvest: "Harvest maize at optimal maturity to maximize yield and store in a well-ventilated area"
-  }
-};
-
-
-const weedInfo = {
-  earlyGrowth: {
-    key_weeds: [
-      "Palmer amaranth",
-      "Giant foxtail",
-      "Common lambsquarters"
-    ],
-    pre_emergent_herbicides: "Atrazine, S-metolachlor",
-    cultural_controls: "Hand weeding, crop rotation",
-    application_details: "Apply pre-emergent herbicides at a rate of 2.5 L/ha, 2 days before planting. Take precautions to avoid drift and ensure proper calibration of equipment."
-  },
-  midSeason: {
-    in_crop_strategies: "Inter-row cultivation, post-emergent herbicide application",
-    selective_herbicides: "Glyphosate, Mesotrione",
-    weather_considerations: "Avoid herbicide application during windy conditions or when rain is expected within 24 hours."
-  },
-  lateSeason: {
-    late_emerging_weeds: "Waterhemp, Horseweed",
-    desiccants_harvest_aids: "Paraquat, Glyphosate",
-    re_cropping_concerns: "Wait 14 days after herbicide application before re-cropping to sensitive crops. Monitor soil pH and organic matter for potential herbicide carryover."
-  }
-};
 
 export default Control
