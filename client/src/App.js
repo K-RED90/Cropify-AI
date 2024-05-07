@@ -4,7 +4,7 @@ import * as ReactDOM from "react-dom/client";
 import Homepage from "./screen/homepage/homepage";
 import Chat from "./screen/chat/chat";
 import Farmdata from "./screen/farm-data/farm-data";
-
+import Control from "./screen/control/control";
 
 import {
   createBrowserRouter,
@@ -25,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard/farm-data",
     element: <Farmdata/>,
+  },
+  {
+    path: "/dashboard/control",
+    element: <Control/>,
   },
 ]);
 

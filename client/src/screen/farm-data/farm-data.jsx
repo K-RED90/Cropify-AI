@@ -2,11 +2,31 @@ import React, { useContext } from 'react'
 import DashboardLayout from '../../components/dashboardLayout/dashboardLayout'
 import "./farm-data.css"
 import { farm_data_context } from '../../service/farm_data_context'
+import { useNavigate } from 'react-router-dom'
 const Farm_data = () =>
 {
-  const { location } = useContext(farm_data_context)
+  const { location,
+    get_farm_data,
+    fertilizer_data_response,
+    fertilizer_control,
+    weed_data_response,
+    weed_control,
+    pests_and_diseases_response,
+    pests_and_diseases_control,
+    soil_and_crop_management_response,
+    soil_crop_management,
+  } = useContext(farm_data_context)
   
-  console.log(location)
+  //console.log(location)
+
+  const navigate = useNavigate()
+
+  const navigation = ()=>{
+    navigate("/dashboard/control")
+  }
+  if (soil_crop_management) {
+    console.log(soil_crop_management)
+  }
   return (
     <DashboardLayout>
       <section className='farm_data'>
@@ -20,7 +40,7 @@ const Farm_data = () =>
               <div className='crop'>
                 <h3 for="crop">Crop</h3>
                 <div className='crop_field'>
-                  <input type='text' name='crop' id='crop' placeholder='Enter crop'/>
+                  <input type='text' name='crop' id='crop' placeholder='Enter crop' onChange={get_farm_data}/>
                 </div>
               </div>
               
@@ -33,7 +53,7 @@ const Farm_data = () =>
                     return (
                       <div className='soil_field' key={data.id}>
                         <label for={data.name}>{ data.lable}</label>
-                        <select id={data.name} name={data.name}>
+                        <select id={data.name} name={data.name} onChange={get_farm_data}>
                           <option value="">Select</option>
                           {
                             data.option.map((option, i)=>{
@@ -51,7 +71,7 @@ const Farm_data = () =>
                   <div className='pct_soil_moisture'>
                     <label htmlFor="pct_soil_moisture">Percentage soil moisture</label>
                     <div className='pct_soil_moisture_field'>
-                      <input type='text' name='pct_soil_moisture' placeholder='Enter the percentage of the soil moisture'/>
+                      <input type='text' name='pct_soil_moisture' placeholder='Enter the percentage of the soil moisture' onChange={get_farm_data}/>
                     </div>
                   </div>
               </div>
@@ -61,10 +81,10 @@ const Farm_data = () =>
               <h3>Pests and Diseases</h3>
                <div>
                   <div className='field'>
-                      <input type='text' name='pest' placeholder='Enter pests '/>
+                      <input type='text' name='pests' placeholder='Enter pests ' onChange={get_farm_data}/>
                   </div>
                   <div className='field'>
-                      <input type='text' name='diseases' placeholder='Enter Diseases'/>
+                      <input type='text' name='diseases' placeholder='Enter Diseases' onChange={get_farm_data}/>
                   </div>
                </div>
             </div>
@@ -72,7 +92,7 @@ const Farm_data = () =>
           </form>
 
           <div>
-            <button>Submit</button>
+            <button onClick={() => { fertilizer_data_response(); weed_data_response(); pests_and_diseases_response(); soil_and_crop_management_response(); navigation()}}>Submit</button>
           </div>
         </section>
         

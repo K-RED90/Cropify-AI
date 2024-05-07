@@ -9,10 +9,26 @@ const Farm_data_provider = ({children}) => {
     
     const [ location, setLocation ] = useState({
         latitude: "",
-        longitude:""
+        longitude:"",
     })
     
-  const [weather, setWeather] = useState(null)
+  const [ weather, setWeather ] = useState({})
+  
+  const [ farm_data, set_farm_data ] = useState({
+    soil_type: "",
+    soil_ph: "",
+    crop: "",
+    pct_soil_moisture: "",
+    soil_fertility: "",
+    diseases: "",
+    pests: ""
+  })
+  
+  const [ soil_crop_management, set_soil_crop_management] = useState(null)
+  const [ fertilizer_control, set_fertilizer_control ] = useState("")
+  const [ weed_control, set_weed_control ] = useState(null)
+  const [pests_and_diseases_control, set_pests_and_diseases_control] = useState(null)
+
 
 
     const getLocation = useCallback(()=>{
@@ -53,7 +69,7 @@ const get_weather = useCallback(async()=>{
   
   useEffect(() =>{
     if(location.latitude){
-      //get_weather()
+      get_weather()
     }
   },[location.latitude])
   
@@ -62,13 +78,190 @@ const get_weather = useCallback(async()=>{
 }
 
 
+  
+const get_farm_data = useCallback((e) =>{
+  set_farm_data({ ...farm_data, [ e.target.name ]: e.target.value })
+  console.log(farm_data)
+}, [farm_data])
 
 
+  const fertilizer_data_response = async ()=>{
+    console.log("click")
+    try {
+      const farm_body = {
+        farm_data: {
+          crop: farm_data.crop,
+          soil: {
+            soil_type: farm_data.soil_type,
+            soil_ph: farm_data.soil_ph,
+            pct_soil_moisture: farm_data.pct_soil_moisture,
+            soil_fertility: farm_data.soil_fertility
+          },
+      pests_and_diseases: {
+        diseases: farm_data.diseases,
+        pests: farm_data.pests
+      }
+        },
+        weather_data: {
+          status: weather?.status,
+          wind: weather?.wind,
+          humidity: weather?.humidity,
+          temperature: weather?.temperature,
+          heat_index: weather?.heat_index,
+          clouds: weather?.clouds,
+          pressure: weather?.pressure,
+          precipitation_probability: weather?.precipitation_probability
+        }
+      }
+      const fertilizer_response = await axios.post(`http://localhost:8000/farm/fertilizer_recommendation`, farm_body)
+      console.log(farm_body)
+      if (fertilizer_response.status === 200) {
+        const data = await fertilizer_response.data 
+        set_fertilizer_control(data)
+      }
+
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
+   const weed_data_response = async ()=>{
+    console.log("click")
+    try {
+      const farm_body = {
+        farm_data: {
+          crop: farm_data.crop,
+          soil: {
+            soil_type: farm_data.soil_type,
+            soil_ph: farm_data.soil_ph,
+            pct_soil_moisture: farm_data.pct_soil_moisture,
+            soil_fertility: farm_data.soil_fertility
+          },
+      pests_and_diseases: {
+        diseases: farm_data.diseases,
+        pests: farm_data.pests
+      }
+        },
+        weather_data: {
+          status: weather?.status,
+          wind: weather?.wind,
+          humidity: weather?.humidity,
+          temperature: weather?.temperature,
+          heat_index: weather?.heat_index,
+          clouds: weather?.clouds,
+          pressure: weather?.pressure,
+          precipitation_probability: weather?.precipitation_probability
+        }
+      }
+      const fertilizer_response = await axios.post(`http://localhost:8000/farm/weed_control`, farm_body)
+      
+      if (fertilizer_response.status === 200) {
+        const data = await fertilizer_response.data 
+        set_weed_control(data)
+      }
+
+    } catch (error) {
+      console.log(error.message)
+    }
+   }
+  
+   const pests_and_diseases_response = async ()=>{
+    console.log("click")
+    try {
+      const farm_body = {
+        farm_data: {
+          crop: farm_data.crop,
+          soil: {
+            soil_type: farm_data.soil_type,
+            soil_ph: farm_data.soil_ph,
+            pct_soil_moisture: farm_data.pct_soil_moisture,
+            soil_fertility: farm_data.soil_fertility
+          },
+      pests_and_diseases: {
+        diseases: farm_data.diseases,
+        pests: farm_data.pests
+      }
+        },
+        weather_data: {
+          status: weather?.status,
+          wind: weather?.wind,
+          humidity: weather?.humidity,
+          temperature: weather?.temperature,
+          heat_index: weather?.heat_index,
+          clouds: weather?.clouds,
+          pressure: weather?.pressure,
+          precipitation_probability: weather?.precipitation_probability
+        }
+      }
+      const fertilizer_response = await axios.post(`http://localhost:8000/farm/pest_and_disease_control`, farm_body)
+      
+      if (fertilizer_response.status === 200) {
+        const data = await fertilizer_response.data 
+        set_pests_and_diseases_control(data)
+      }
+
+    } catch (error) {
+      console.log(error.message)
+    }
+   }
+  
+  const soil_and_crop_management_response = async ()=>{
+    console.log("click")
+    try {
+      const farm_body = {
+        farm_data: {
+          crop: farm_data.crop,
+          soil: {
+            soil_type: farm_data.soil_type,
+            soil_ph: farm_data.soil_ph,
+            pct_soil_moisture: farm_data.pct_soil_moisture,
+            soil_fertility: farm_data.soil_fertility
+          },
+      pests_and_diseases: {
+        diseases: farm_data.diseases,
+        pests: farm_data.pests
+      }
+        },
+        weather_data: {
+          status: weather?.status,
+          wind: weather?.wind,
+          humidity: weather?.humidity,
+          temperature: weather?.temperature,
+          heat_index: weather?.heat_index,
+          clouds: weather?.clouds,
+          pressure: weather?.pressure,
+          precipitation_probability: weather?.precipitation_probability
+        }
+      }
+      const fertilizer_response = await axios.post(`http://localhost:8000/farm/soil_health_and_crop_management`, farm_body)
+      
+      if (fertilizer_response.status === 200) {
+        const data = await fertilizer_response.data 
+        set_soil_crop_management(data)
+      }
+
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
   return (
-    <farm_data_context.Provider value={{location}}>
+    <farm_data_context.Provider value={{
+      location,
+      get_farm_data,
+      fertilizer_data_response,
+      fertilizer_control,
+      weed_data_response,
+      weed_control,
+      pests_and_diseases_response,
+      pests_and_diseases_control,
+      soil_and_crop_management_response,
+      soil_crop_management
+      }}>
       {children}
     </farm_data_context.Provider>
   )
 }
 
 export default Farm_data_provider
+
+
