@@ -53,10 +53,12 @@
     margin-right: 4rem;
     transition: color ease-in;
     cursor: pointer;
+    border: none;
 }
 
 .header > button:hover {
-    background-color: #13f44f;
+    background-color: #f8ac08;
+    border: none;
 }
 
 .body {
@@ -118,7 +120,7 @@ strong {
 
 .left > button {
     width: 200px;
-    background-color: #13f44f;
+    background-color: #f8ac08;
     font-weight: 700;
     font-size: 20px;
     border-radius: 12px;

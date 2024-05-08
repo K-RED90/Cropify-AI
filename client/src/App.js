@@ -20,7 +20,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/dashboard/chat",
+    path: "/dashboard",
     element: <Chat/>,
   },
   {

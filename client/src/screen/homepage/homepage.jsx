@@ -28,15 +28,16 @@ const Homepage = () => {
       </section>
       <section className='body'>
         <div className='left'>
-          <strong>
+          <h1 style={{color:"white", fontSize:"30px"}}>
             Cropify-AI:
-          </strong>
+          </h1>
           <div className='strong'>
             Revolutionizing Farming with Artificial Intelligence
           </div>
 
           <div className='technology'>
-            Technology has revolutionized modern agriculture, making farming more efficient, sustainable, and productive while enabling farmers to meet the growing demand for food in a changing world.
+            Our AI platform is here to support you in every aspect of crop management. While our system is advanced, we understand that mistakes can happen. That's why we've implemented rigorous checks on critical information to ensure accuracy.
+            Whether you're chatting with us, snapping photos of your crops, or providing farm data, rest assured that our AI carefully verifies important details before offering recommendations. We're committed to providing reliable guidance to help you optimize crop yield and ensure a healthy harvest.
           </div>
           <button onClick={()=>navigation()}>Try Cropify AI</button>
         </div>

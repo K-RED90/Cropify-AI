@@ -2,12 +2,15 @@
     width: 100vw;
     display: flex;
     justify-content: flex-start;
+    position: relative;
 }
 
 .sidebar{
     width: 20%;
     height: 100vh;
     background-color: var(--sidebar-background);
+    position: sticky;
+    top:0
 }
 
 .children{

@@ -27,7 +27,10 @@ const Farm_data_provider = ({children}) => {
   const [ soil_crop_management, set_soil_crop_management] = useState(null)
   const [ fertilizer_control, set_fertilizer_control ] = useState("")
   const [ weed_control, set_weed_control ] = useState(null)
-  const [pests_and_diseases_control, set_pests_and_diseases_control] = useState(null)
+  const [ pests_and_diseases_control, set_pests_and_diseases_control ] = useState(null)
+  const [ error, setError ] = useState([])
+  const [load, setLoad] = useState(false)
+  const [nav, setNav] = useState(false)
 
 
 
@@ -77,8 +80,6 @@ const get_weather = useCallback(async()=>{
   console.log(weather)
 }
 
-
-  
 const get_farm_data = useCallback((e) =>{
   set_farm_data({ ...farm_data, [ e.target.name ]: e.target.value })
   console.log(farm_data)
@@ -120,8 +121,8 @@ const get_farm_data = useCallback((e) =>{
         set_fertilizer_control(data)
       }
 
-    } catch (error) {
-      console.log(error.message)
+    } catch (err) {
+      setError([...error, err.message])
     }
   }
 
@@ -153,15 +154,17 @@ const get_farm_data = useCallback((e) =>{
           precipitation_probability: weather?.precipitation_probability
         }
       }
+      setNav(false)
       const fertilizer_response = await axios.post(`http://localhost:8000/farm/weed_control`, farm_body)
       
       if (fertilizer_response.status === 200) {
         const data = await fertilizer_response.data 
         set_weed_control(data)
+        setNav(true)
       }
 
-    } catch (error) {
-      console.log(error.message)
+    } catch (err) {
+      setError([...error, err.message])
     }
    }
   
@@ -193,15 +196,19 @@ const get_farm_data = useCallback((e) =>{
           precipitation_probability: weather?.precipitation_probability
         }
       }
+      setLoad(true)
+      setNav(false)
       const fertilizer_response = await axios.post(`http://localhost:8000/farm/pest_and_disease_control`, farm_body)
       
       if (fertilizer_response.status === 200) {
         const data = await fertilizer_response.data 
         set_pests_and_diseases_control(data)
+        setNav(true)
+        setLoad(false)
       }
 
-    } catch (error) {
-      console.log(error.message)
+    } catch (err) {
+      setError([...error, err.message])
     }
    }
   
@@ -233,15 +240,17 @@ const get_farm_data = useCallback((e) =>{
           precipitation_probability: weather?.precipitation_probability
         }
       }
+      setNav(false)
       const fertilizer_response = await axios.post(`http://localhost:8000/farm/soil_health_and_crop_management`, farm_body)
       
       if (fertilizer_response.status === 200) {
         const data = await fertilizer_response.data 
         set_soil_crop_management(data)
+        setNav(true)
       }
 
-    } catch (error) {
-      console.log(error.message)
+    } catch (err) {
+      setError([...error, err.message ])
     }
   }
   return (
@@ -255,7 +264,11 @@ const get_farm_data = useCallback((e) =>{
       pests_and_diseases_response,
       pests_and_diseases_control,
       soil_and_crop_management_response,
-      soil_crop_management
+      soil_crop_management,
+      error,
+      load,
+      setLoad,
+      nav
       }}>
       {children}
     </farm_data_context.Provider>

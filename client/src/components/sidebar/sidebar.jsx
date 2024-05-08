@@ -11,7 +11,7 @@ const Sidebar = () => {
   return (
     <section className='sidebar_div'>
       <div className='logo'>
-        <h1>Cropify-AI</h1>
+        <Link to="/" style={{textDecoration:"none", color:"white"}}><h1>Cropify-AI</h1></Link>
       </div>
 
       <nav className='nav'>
@@ -53,13 +53,13 @@ const data = [
   {
     id:1,
     nav: "Add Farm Data",
-    link: "/add-crop",
+    link: "/farm-data",
     icon: <FaDatabase className='icon'/>
   },
   {
     id:2,
-    nav: "Add Picture",
-    link: "/add-picture",
+    nav: "Image",
+    link: "/image",
     icon: <AiTwotonePicture className='icon'/>
   }, 
 ]

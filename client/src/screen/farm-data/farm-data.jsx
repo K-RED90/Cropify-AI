@@ -3,6 +3,7 @@ import DashboardLayout from '../../components/dashboardLayout/dashboardLayout'
 import "./farm-data.css"
 import { farm_data_context } from '../../service/farm_data_context'
 import { useNavigate } from 'react-router-dom'
+import { Alert, CircularProgress } from '@mui/material'
 const Farm_data = () =>
 {
   const { location,
@@ -15,6 +16,10 @@ const Farm_data = () =>
     pests_and_diseases_control,
     soil_and_crop_management_response,
     soil_crop_management,
+    error,
+    load,
+    setLoad,
+    nav
   } = useContext(farm_data_context)
   
   //console.log(location)
@@ -22,17 +27,38 @@ const Farm_data = () =>
   const navigate = useNavigate()
 
   const navigation = ()=>{
+   
+  }
+ if (nav) {
     navigate("/dashboard/control")
   }
+  if (error.length > 0) {
+    setLoad(false)
+  }
+  
   if (soil_crop_management) {
     console.log(soil_crop_management)
   }
   return (
     <DashboardLayout>
       <section className='farm_data'>
-        <div className='weather'>
+        {/* <div className='weather'>
 
+        </div> */}
+        <div>
+         
         </div>
+
+        {error?.length !== 0 && (
+           <div style={{marginTop:"1rem"}}>
+            {error.map((err, index)=>{
+              return (
+                <Alert key={index} severity="error">{error }</Alert>
+              )
+            })}
+          </div>
+        )}
+       
 
         <section className='data_field'>
           <h1>Provide farm data</h1>
@@ -92,7 +118,8 @@ const Farm_data = () =>
           </form>
 
           <div>
-            <button onClick={() => { fertilizer_data_response(); weed_data_response(); pests_and_diseases_response(); soil_and_crop_management_response(); navigation()}}>Submit</button>
+            <button onClick={() => { fertilizer_data_response(); weed_data_response(); pests_and_diseases_response(); soil_and_crop_management_response(); navigation() }}>{load ? <CircularProgress color="success" /> : "Submit"}
+</button>
           </div>
         </section>
         
