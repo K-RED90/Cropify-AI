@@ -32,40 +32,26 @@ def _is_valid_identifier(value: str) -> bool:
     return bool(valid_characters.match(value))
 
 
-def create_session_factory() -> Callable[[str], BaseChatMessageHistory]:
-    """Create a factory that can retrieve chat histories.
+def create_session_factory(user_id: str, conversation_id: str) -> Callable[[str, str], BaseChatMessageHistory]:
+    if not _is_valid_identifier(user_id):
+        raise ValueError(
+            f"User ID {user_id} is not in a valid format. "
+            "User ID must only contain alphanumeric characters, "
+            "hyphens, and underscores."
+            "Please include a valid cookie in the request headers called 'user-id'."
+        )
+    if not _is_valid_identifier(conversation_id):
+        raise ValueError(
+            f"Conversation ID {conversation_id} is not in a valid format. "
+            "Conversation ID must only contain alphanumeric characters, "
+            "hyphens, and underscores. Please provide a valid conversation id "
+            "via config. For example, "
+            "chain.invoke(.., {'configurable': {'conversation_id': '123'}})"
+        )
 
-    The chat histories are keyed by user ID and conversation ID.
+    id_ = f"{user_id}-{conversation_id}"
+    return SQLChatMessageHistory(id_, connection_string="sqlite:///chat_history.db")
 
-    Args:
-        base_dir: Base directory to use for storing the chat histories.
-
-    Returns:
-        A factory that can retrieve chat histories keyed by user ID and conversation ID.
-    """
-
-    def get_chat_history(user_id: str, conversation_id: str) -> SQLChatMessageHistory:
-        """Get a chat history from a user id and conversation id."""
-        if not _is_valid_identifier(user_id):
-            raise ValueError(
-                f"User ID {user_id} is not in a valid format. "
-                "User ID must only contain alphanumeric characters, "
-                "hyphens, and underscores."
-                "Please include a valid cookie in the request headers called 'user-id'."
-            )
-        if not _is_valid_identifier(conversation_id):
-            raise ValueError(
-                f"Conversation ID {conversation_id} is not in a valid format. "
-                "Conversation ID must only contain alphanumeric characters, "
-                "hyphens, and underscores. Please provide a valid conversation id "
-                "via config. For example, "
-                "chain.invoke(.., {'configurable': {'conversation_id': '123'}})"
-            )
-
-        id_ = f"{user_id}-{conversation_id}"
-        return SQLChatMessageHistory(id_, connection_string="sqlite:///chat_history.db")
-
-    return get_chat_history
 
 
 class ResponseBody(BaseModel):
@@ -86,7 +72,7 @@ class Message(BaseModel):
 
 runnable_with_history = RunnableWithMessageHistory(
     runnable=graph,
-    get_session_history=create_session_factory(),
+    get_session_history=create_session_factory,
     input_messages_key="messages",
     history_messages_key="chat_history",
     history_factory_config=[
