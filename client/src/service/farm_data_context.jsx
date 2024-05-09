@@ -82,6 +82,10 @@ const get_weather = useCallback(async()=>{
 
 const get_farm_data = useCallback((e) =>{
   set_farm_data({ ...farm_data, [ e.target.name ]: e.target.value })
+  // set_fertilizer_control(null)
+  // set_weed_control(null)
+  // set_pests_and_diseases_control(null)
+  // soil_and_crop_management_response(null)
   console.log(farm_data)
 }, [farm_data])
 
@@ -160,6 +164,7 @@ const get_farm_data = useCallback((e) =>{
       if (fertilizer_response.status === 200) {
         const data = await fertilizer_response.data 
         set_weed_control(data)
+        console.log(data)
         setNav(true)
       }
 

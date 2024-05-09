@@ -41,10 +41,10 @@ const Control = () => {
           <Typography>Fertilizer Recommendations</Typography>
         </AccordionSummary>
         <AccordionDetails sx={{marginLeft:"2rem"}}>
-          <Typography>
-            {<div>Loading...</div>}
-          </Typography>
-          
+            {fertilizer_control ? (<div>
+              <h2>Recommendation</h2>
+              <p>{ fertilizer_control?.recommendation}</p>
+          </div>): <div>Loading...</div>}
         </AccordionDetails>
       </Accordion>
       
