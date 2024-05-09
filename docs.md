@@ -16,7 +16,7 @@ By analyzing your farm data, such as crop types, soil conditions, and real-time 
 ###  1. Agent Workflow Breakdown: AgriScan and AgroAssist
 The agent goes through a lot of steps to provide the best possible assistance to the user. The agent can handle both text and image inputs, providing a comprehensive solution for various user queries. The workflow is divided into two main sections: text input and image input.
 
-**Reference Image:** ![Agent Workflow](https://github.com/K-RED90/Cropify-AI/blob/main/image/Agent%20Workflow.png)
+![Agent Workflow](https://github.com/K-RED90/Cropify-AI/blob/main/image/Agent%20Workflow.png)
 
 The workflow operates differently depending on the user input type: text or image.
 
