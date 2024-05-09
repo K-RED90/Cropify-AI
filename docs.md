@@ -58,4 +58,19 @@ The workflow operates differently depending on the user input type: text or imag
 
 3. **Unrelated Image:** Images not classified as pests or crop diseases are handled by the `unrelated_image` node. This node informs the user that the image doesn't depict a pest or disease. Finally, the answer is formatted in the `final` node.
 
-This breakdown offers a detailed explanation of the agent workflow, outlining its functionality for various user input scenarios.
+### 2. AgriAdvisor: Data-Driven Farm Management
+AgriAdvisor is a powerful feature of Cropify AI that provides data-driven farm management recommendations. By analyzing your farm data, such as crop types, soil conditions, and real-time weather information, AgriAdvisor delivers tailored recommendations for optimizing fertilizer application, pest control, soil health, and crop management strategies.
+
+One of the key challenges in developing AgriAdvisor is the time-consuming and expensive process of calling multiple APIs to analyze the farm data and augment the AI's answer. To address this challenge, we leverage the agent's learned knowledge and its weights to analyze the farm data and provide recommendations.
+
+However, to ensure the best possible results, we employ more effective prompting techniques, such as the `Chain of Thought (COT)` prompting method. This approach encourages the AI agent to break down complex problems into a series of intermediate steps, explicitly reasoning through the problem and explaining its thought process.
+
+The `Chain of Thought (COT)` prompting method works as follows:
+
+1. **Problem Decomposition**: The AI agent breaks down the given problem into smaller, more manageable sub-problems or steps.
+2. **Step-by-Step Reasoning**: For each sub-problem, the agent reasons through the necessary steps to solve it, explicitly expressing its thought process and intermediate conclusions.
+3. **Final Solution**: After working through the intermediate steps, the agent arrives at the final solution to the original problem, combining the insights gained from the step-by-step reasoning.
+
+By employing the `Chain of Thought (COT)` prompting method, AgriAdvisor can provide more transparent and interpretable recommendations. The agent's reasoning process is laid out in a structured manner, allowing users to understand how the AI arrived at its recommendations and the factors it considered.
+
+Overall, AgriAdvisor combines the power of learned knowledge, efficient data analysis, and the `Chain of Thought (COT)` prompting method to deliver accurate and transparent farm management recommendations, helping farmers maximize their yields and achieve sustainable agricultural practices.
