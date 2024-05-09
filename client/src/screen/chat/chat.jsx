@@ -25,7 +25,8 @@ const Chat = () => {
     }
 
   const scroll = ()=>{
-  const divElement = document.getElementById('chat');
+    const divElement = document.getElementById('chat');
+    
     // Scroll the div to the bottom
     if (divElement) {
       divElement.scrollTop = divElement.scrollHeight
