@@ -1,11 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends, status, File, UploadFile
+from fastapi import APIRouter, HTTPException, status, File, UploadFile
 from .agent_workflow import compile_graph
 from models import load_llm
-from langchain_core.runnables import Runnable
 from langchain_community.chat_message_histories.sql import SQLChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.runnables.utils import ConfigurableFieldSpec
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional, Callable, List, Dict
 from uuid import uuid4
 import tempfile
@@ -13,11 +12,6 @@ from langchain_core.messages import HumanMessage, AIMessage
 import os
 import re
 from langchain_core.chat_history import BaseChatMessageHistory
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
 
 model = load_llm(model="gpt-3.5-turbo-0125")
 graph = compile_graph(llm=model)
