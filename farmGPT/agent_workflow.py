@@ -76,6 +76,7 @@ class AgentNodes(BaseModel):
                     "Please install the openai plugin to use the default LLM. Run `pip install langchain-openai`"
                 )
             llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0.5)
+            # vision_model = ChatOpenAI(model="gpt-4-vision-preview", temperature=0.5)
 
         if vision_tool is None:
             try:
@@ -87,6 +88,7 @@ class AgentNodes(BaseModel):
             vision_model = ChatAnthropic(
                 model="claude-3-haiku-20240307", temperature=0.5
             )  #TODO Change to gpt-4-turbo
+        
         values["vision_tool"] = partial(pest_and_disease_tool, llm=vision_model)
         values["llm"] = llm
         values["chain"] = partial(farm_chain, llm=llm)
@@ -217,7 +219,7 @@ class AgentNodes(BaseModel):
 
     def call_tools(self, state: AgentState):
         agent_actions = self.parser.invoke(state["messages"][-1])
-        print(agent_actions)
+        # print(agent_actions)
         print("===Calling Tools===")
         ids = []
         tool_invocations = []
