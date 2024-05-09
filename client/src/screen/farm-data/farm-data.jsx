@@ -61,7 +61,7 @@ const Farm_data = () =>
        
 
         <section className='data_field'>
-          <h1>Provide farm data</h1>
+          <h1>Farm Data</h1>
             <form>
               <div className='crop'>
                 <h3 for="crop">Crop</h3>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import DashboardLayout from "../../components/dashboardLayout/dashboardLayout"
 import logo from "../../assets/logo.png"
 import "./chat.css"
@@ -6,8 +6,14 @@ import { Button } from '@mui/material'
 import { IoIosSend } from "react-icons/io";
 import { FaRegArrowAltCircleUp } from "react-icons/fa";
 import ReactMarkdown from 'react-markdown';
-
+import { useContext } from 'react'
+import { chatContext } from '../../service/chat_context'
 const Chat = () => {
+  const { get_screen_message, get_chat_ID } = useContext(chatContext)
+  
+  useEffect(()=>{
+    get_chat_ID()
+  }, [])
   return (
     <DashboardLayout>
       <section className='chat_ai'>
@@ -39,7 +45,7 @@ const Chat = () => {
             {
               question.map((question, index)=>{
                 return (
-                   <div key={question.id} className='question_box'>
+                   <div key={question.id} className='question_box' onClick={()=>get_screen_message(question.message)}>
                     <div className='ques_content'>
                       <p className='bold'>{question.ques}</p>
                       <p className='hint'>{ question.hint}</p>

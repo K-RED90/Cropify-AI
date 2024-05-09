@@ -6,7 +6,7 @@
     justify-content: space-between;
     align-items: flex-start;
     height: 100vh;
-    margin-bottom: ;
+    /* margin-bottom: ; */
 }
 
 .chat_ai > .chat_box{
@@ -126,6 +126,7 @@
     border-radius: 8px;
     font-size: 14px;
     transition: background-color 0.5s ease-in;
+    cursor: pointer;
 }
 .question_box:hover{
     background-color: rgb(225, 225, 225);
