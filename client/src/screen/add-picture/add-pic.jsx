@@ -11,15 +11,16 @@ const AddPicture = () => {
 
 const {image, get_image, image_response, img_data, pic_loading, img_error, set_img_error, set_pic_loading } = useContext(imageContext)
 
-    if (img_error) {
-        const inter = setInterval(() => { 
-            set_img_error(null)
-            set_pic_loading(false)
-        }, [ 2000 ])
+    // if (img_error) {
+    //     const inter = setInterval(() => { 
+    //         set_img_error(null)
+    //         set_pic_loading(false)
+    //     }, [ 2000 ])
 
-        return clearInterval(inter)
+    //     return clearInterval(inter)
         
-    }
+    // }
+
 const open =()=>{
     document.getElementById("file").click()
 }
@@ -64,13 +65,21 @@ const open =()=>{
         
         {!img_data ? (
              <div className='content'>
-                {/* <h1>Empower your farming endeavors with our AI-powered solution</h1> */}
-                <p>Simply provide images of your crops affected by pests or diseases,
-                    and receive personalized recommendations instantly. Our ready-to-use
-                    components are free forever, offering you a seamless experience in managing
-                    your farm's health. With accessibility always in mind, our platform provides
-                    invaluable assistance for optimizing crop yield and ensuring a healthy harvest.
-                </p>   
+                <h1>Cropify AI's Farm Image Analysis powered by GPT-4V</h1>
+                <p>Quickly identify and address crop issues with our powerful 
+                arm image analysis tool. Simply upload images of affected
+                plants, and our AI system will:
+                </p>  
+                <ul style={{lineHeight:"16px", fontSize:"16px"}}>
+                    <li> ⁠Accurately diagnose diseases, pests, and insect infestations through visual analysis</li>
+                    <li><p> ⁠Provide detailed descriptions, symptoms, and potential impact on yields</p></li>
+                    <li><p>Perform tailored web searches to find the latest recommended treatments and management strategies</p></li>
+                    <li><p>⁠Leverage the cutting-edge GPT-4V language model for precise insights.</p></li>
+                </ul> 
+                <p>Stay ahead of threats to your crops with Cropify 
+                    AI's advanced image analysis capabilities. Detect
+                      problems early, get expert guidance on resolutions,
+                      and take prompt action for a bountiful harvest 🎉.</p>
             </div>
         ) : null}
         {img_error && (

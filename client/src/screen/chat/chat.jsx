@@ -126,7 +126,7 @@ const Chat = () => {
                 <IoIosSend  className='send'/>
               </Button>
             </section>
-            <div style={{textAlign:"center", width:"100%", fontSize:"14px", fontWeight:"lighter"}}>Cropify-Ai can make mistakes. Consider checking important information.</div>
+            <div style={{textAlign:"center", width:"100%", fontSize:"14px", fontWeight:"lighter"}}>"Powered by ChatGPT, I'm here to help you grow better. Ask me anything about farming!"</div>
           </div>
         </section>
       </section>

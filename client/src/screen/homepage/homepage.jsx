@@ -36,8 +36,10 @@ const Homepage = () => {
           </div>
 
           <div className='technology'>
-            Our AI platform is here to support you in every aspect of crop management. While our system is advanced, we understand that mistakes can happen. That's why we've implemented rigorous checks on critical information to ensure accuracy.
-            Whether you're chatting with us, snapping photos of your crops, or providing farm data, rest assured that our AI carefully verifies important details before offering recommendations. We're committed to providing reliable guidance to help you optimize crop yield and ensure a healthy harvest.
+            <p>🌱 Cropify AI: Your Intelligent Farming Companion 🌾
+            Welcome to Cropify AI, the cutting-edge agricultural solution that harnesses the power of artificial intelligence to revolutionize your farming experience! 🚀
+            With our three innovative features, we empower you to unlock the full potential of your crops and maximize your yields like never before.
+              </p>
           </div>
           <button onClick={()=>navigation()}>Try Cropify AI</button>
         </div>
@@ -45,7 +47,51 @@ const Homepage = () => {
           <img src={img} alt='imag'/>
         </div>
       </section>
-     </section>
+      </section>
+      
+      <div style={{
+        width: "80%",
+        margin: "auto",
+        marginBottom:"6rem"
+      }}>
+        <div>
+          <h1 style={{borderBottom:"1px solid black", padding:"10px", marginTop:"5rem",}}>Purpose of Cropify-AI</h1>
+        </div>
+
+        <ol>
+          <li><h2>AgriScan</h2></li>
+            <p>Diagnose Crop Issues with AI Image Analysis
+            Simply upload images of your affected plants,
+            and our advanced AI system, powered by GPT-4V,
+            will accurately identify diseases, pests, and insect infestations.
+            Get detailed descriptions, potential impacts, and recommended treatments
+            – all at your fingertips! 🌿</p>
+          
+          <li><h2>AgroAssist</h2></li>
+              <p>Your Virtual Farm Advisor
+                Engage in natural conversations with our intelligent chatbot, 
+                AgroAssist. Leveraging weather tools and search engines, it provides
+                expert guidance on crop cultivation, pest management, and farming best
+                practices. Plus, it shares valuable links for further reading! 🌍
+              </p>
+            
+          <li><h2>AgriAdvisor</h2></li>
+            <p>
+              Data-Driven Farm Management
+              By analyzing your farm data, such as crop types, soil
+              conditions, and real-time weather information, AgriAdvisor delivers
+              tailored recommendations for optimizing fertilizer application,
+              pest control, soil health, and crop management. Maximize your yields
+              with data-driven insights! 📈
+            </p>
+        </ol>
+      </div>
+
+      <div style={{width:"100%", height:"40vh", backgroundColor:"#325757", display: "flex", flexDirection:"column", justifyContent:"center", alignItems:"center", color:"white"}}>
+        <h1>Join the future of intelligent agriculture with Cropify AI! </h1>
+        <p>Embrace our cutting-edge technology and transform your farming operations into a sustainable, efficient, and prosperous venture.
+          ower of AI in agriculture today! 🌐</p>
+      </div>
     </div>
   )
 }
