@@ -2,6 +2,14 @@ from langchain_core.pydantic_v1 import BaseModel, Field, validator
 from typing import List, Optional, Literal
 
 
+class MarkdownLink(BaseModel):
+    """
+    Pydantic model for a markdown link.
+    """
+
+    title: str = Field(..., description="The title of the link.")
+    url: str = Field(..., description="The URL of the link.")
+
 class ResponseFormat(BaseModel):
     """
     Use this schema to format the response to the user's query.
@@ -10,7 +18,7 @@ class ResponseFormat(BaseModel):
     answer: str = Field(
         ..., description="A clear and concise answer to the user's query."
     )
-    links: List[str] = Field(
+    links: List[MarkdownLink] = Field(
         ...,
         description="A list of relevant links in markdown format to support the answer. Eg. [Link Title](URL).",
     )
