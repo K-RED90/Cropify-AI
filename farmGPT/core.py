@@ -144,9 +144,9 @@ class Disease(BaseModel):
 class PestOrDisease(BaseModel):
     """Use this schema to provide information about a pest, crop, or other issue identified in an image."""
 
-    label: Literal["pest", "crop", "other_image"] = Field(
+    label: Literal["pest", "crop_disease", "other_image"] = Field(
         ...,
-        description="The type of issue identified in the image. If the image shows a pest, the label should be 'pest'. If the image shows a crop, the label should be 'crop'. If the image does not show a pest or crop, the label should be 'other_image'.",
+        description="The type of issue identified in the image. If the image shows a pest, the label should be 'pest'. If the image shows a crop_disease/crop, the label should be 'crop_disease'. If the image does not show a pest or crop disease/crop, the label should be 'other_image'.",
     )
 
 

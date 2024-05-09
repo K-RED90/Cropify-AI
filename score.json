@@ -1,0 +1,112 @@
+[
+  {
+    "evaluation": "N",
+    "prediction": "Apple Scab",
+    "actual_label": "Tomato Blight"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Aphid Infestation",
+    "actual_label": "Aphids"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Apple Scab",
+    "actual_label": "apple scab"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Apple Scab",
+    "actual_label": "applescab leaf"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Apple Scab",
+    "actual_label": "AppleScab"
+  },
+  {
+    "evaluation": "N",
+    "prediction": "Sugarcane Borer",
+    "actual_label": "army worm"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Monarch Caterpillar",
+    "actual_label": "caterpillar"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Corn Smut",
+    "actual_label": "corn smut or corn-fungus"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Corn Smut",
+    "actual_label": "corn smut"
+  },
+  {
+    "evaluation": "N",
+    "prediction": "Cabbage Looper",
+    "actual_label": "Cutworm"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Grasshopper",
+    "actual_label": "grasshopper"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Gray mold (Botrytis cinerea)",
+    "actual_label": "Grey mold"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Strawberry Fruit Rot",
+    "actual_label": "Grey Mold."
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Botrytis Fruit Rot",
+    "actual_label": "Grey Mold"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Japanese Beetle",
+    "actual_label": "japanese beetle"
+  },
+  {
+    "evaluation": "N",
+    "prediction": "Tomato Early Blight",
+    "actual_label": "Late tomato blight"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Corn Smut",
+    "actual_label": "maize-smut"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Blast Disease",
+    "actual_label": "Rice blast"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Early Blight",
+    "actual_label": "Tomato Blight"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Tomato Early Blight",
+    "actual_label": "Tomato-blight-on-fruit-cluster"
+  },
+  {
+    "evaluation": "N",
+    "prediction": "Tomato Early Blight",
+    "actual_label": "tomato-late-blight"
+  },
+  {
+    "evaluation": "Y",
+    "prediction": "Cabbage Weevil",
+    "actual_label": "weevil"
+  }
+]

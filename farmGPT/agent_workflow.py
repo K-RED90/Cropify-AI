@@ -85,7 +85,7 @@ class AgentNodes(BaseModel):
                     "Please install the anthropic plugin to use the default LLM. Run `pip install langchain-anthropic`"
                 )
             vision_model = ChatAnthropic(
-                model="claude-3-haiku-20240307", temperature=0.0
+                model="claude-3-haiku-20240307", temperature=0.5
             )  #TODO Change to gpt-4-turbo
         values["vision_tool"] = partial(pest_and_disease_tool, llm=vision_model)
         values["llm"] = llm
@@ -122,7 +122,7 @@ class AgentNodes(BaseModel):
             print(output)
             if output.label == "pest":
                 return "pest"
-            elif output.label == "crop":
+            elif output.label == "crop_disease":
                 return "disease"
             else:
                 return "other_image"
