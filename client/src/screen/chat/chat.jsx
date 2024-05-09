@@ -2,18 +2,39 @@ import React, { useEffect } from 'react'
 import DashboardLayout from "../../components/dashboardLayout/dashboardLayout"
 import logo from "../../assets/logo.png"
 import "./chat.css"
-import { Button } from '@mui/material'
+import { Alert, Box, Button, CircularProgress } from '@mui/material'
 import { IoIosSend } from "react-icons/io";
 import { FaRegArrowAltCircleUp } from "react-icons/fa";
 import ReactMarkdown from 'react-markdown';
 import { useContext } from 'react'
 import { chatContext } from '../../service/chat_context'
 const Chat = () => {
-  const { get_screen_message, get_chat_ID } = useContext(chatContext)
+  const { get_screen_message, get_chat_ID , chat, get_input_message, button_sent, chatload, chatError, setChatError, setChatLoad} = useContext(chatContext)
   
   useEffect(()=>{
     get_chat_ID()
   }, [])
+
+   if (chatError) {
+        const inter = setInterval(() => { 
+            setChatError(null)
+          setChatLoad(false)
+        return clearInterval(inter)
+        }, [ 2000 ])
+        
+    }
+
+  const scroll = ()=>{
+  const divElement = document.getElementById('chat');
+    // Scroll the div to the bottom
+    if (divElement) {
+      divElement.scrollTop = divElement.scrollHeight
+    }
+ }
+  
+   scroll()
+
+ console.log("Load", chatload)
   return (
     <DashboardLayout>
       <section className='chat_ai'>
@@ -24,23 +45,55 @@ const Chat = () => {
            <small style={{fontSize:"14px"}}>Cropify-AI</small>
          </div>
          
-        {/* <div className='chat_box'>
-             <div  key={"index"} className='messages'>
-                <div className='user_message'>
-                  <div className='circle'>You</div>
-                  <div className='message'> {"chat.user"}</div>
-                </div>
-                <div className='ai_message'>
-                  <div className='circle'>AI</div>
-                  <div className='message'>
-                    <ReactMarkdown>{ "chat.chat"}</ReactMarkdown>
+        {chatError && (
+           <div style={{marginTop:"1rem"}}>
+                <Alert  severity="error">{chatError}</Alert>
+          </div>
+        )}
+        {chat.length > 0 && (
+           <div className='chat_box' id="chat">
+             {chat.map((chat, index)=>{
+               return (
+                <div  key={"index"} className='messages'>
+                  <div className='user_message'>
+                    <div className='circle'>You</div>
+                    <div className='message'> {chat.user}</div>
+                  </div>
+                  <div className='ai_message'>
+                    <div className='circle'>AI</div>
+                     <div className='message'>
+                       
+                       <ReactMarkdown>{chat.ai}</ReactMarkdown>
+                       {chat.links.length > 0 && <h3>Read more</h3>}
+                       {chat.links.map((link, index)=>{
+                         return (
+                          <ReactMarkdown key={index}>{link}</ReactMarkdown>
+                        )
+                       })}
+                    </div>
                   </div>
                 </div>
-              </div>
-        </div> */}
+              )
+             })}
+        </div>
+        )}
+       
+     
+        {
+          chatload && (
+                      <div style={{display:"flex", justifyContent:"center", alignItems:"center", width:"100%"}}>
+           <Box  sx={{ display: 'flex'}}>
+              <CircularProgress />
+            </Box> 
+        </div>
 
+          )
+        }
+
+        
         <section className='question_and_input'>
-          <div className='question'>
+          {chat.length === 0 && (
+            <div className='question'>
 
             {
               question.map((question, index)=>{
@@ -57,18 +110,18 @@ const Chat = () => {
                 )
               })
             }
-           
           </div>
-
+         )}
+          
           <div className='input'>
             <section className='input_area'>
               <textarea
                 contenteditable="true"
                 placeholder="Provide a message related to farming and weather..."
                 className='input_field'
-                // onChange={getMessage}
+                onChange={get_input_message}
               />
-              <Button variant='contained' sx={{ width: "10%", height: "50px", padding: "10px", color: "white", backgroundColor: "#325757", borderRadius:"12px" }}>
+              <Button variant='contained' sx={{ width: "10%", height: "50px", padding: "10px", color: "white", backgroundColor: "#325757", borderRadius:"12px" }} onClick={()=>button_sent()}>
                 <IoIosSend  className='send'/>
               </Button>
             </section>
@@ -84,27 +137,27 @@ const Chat = () => {
 const question = [
   {
     id: 0,
-    ques: 'Help me get my current weather ?',
-    message: "what is my current weather",
-    hint:"As an AI I can provide you your current weather condition"
+    ques: 'The current temperature and weather conditions in Cape Coast?',
+    message: "What are the current temperature and weather conditions in Cape Coast?",
+    hint:"As an AI I can provide you your current weather condition and temperature"
   },
   {
     id: 1,
-    ques: 'Is farming help economic growth ?',
-    message: "does farming promote economy ?",
-    hint:"Let me show you the Beneficts of farming"
+    ques: '⁠What crop rotation techniques benefit soil health in tropical regions such as Northern Ghana?',
+    message: " ⁠What crop rotation techniques benefit soil health in tropical regions such as Northern Ghana?",
+    hint:"Let me show you the Beneficts of crop lotation techniques"
   },
   {
     id: 2,
-    ques: 'Will it rain today ?',
-    message: "will it be raining today ?",
-    hint:"I can predict if it will be raining today"
+    ques: ` ⁠Check Kumasi's forecast next week for rain that could affect apple orchard pesticide spraying.`,
+    message: ` ⁠Check Kumasi's forecast next week for rain that could affect apple orchard pesticide spraying.`,
+    hint:"let me predicKumasi's forecast next week for rain that could affect apple orchard pesticide spraying."
   },
   {
     id: 3,
-    ques: 'How to start farming ?',
-    message: "can you teach me how I can start farming ?",
-    hint:"Farming is important let me quide you how to start"
+    ques: 'What are effective organic or natural methods for controlling tomato hornworm infestations?',
+    message: "What are effective organic or natural methods for controlling tomato hornworm infestations?",
+    hint:"The effective organic or natural methods for controlling tomato hornworm infestations "
   },
   
   

@@ -26,7 +26,7 @@ const ImageProvider = ({children}) => {
         try {
             if (picture) {
                 set_pic_loading(true)
-                const response = await axios.post(`http://localhost:8000/farmGPT/image`, formData)
+                const response = await axios.post(`http://localhost:5000/farmGPT/image`, formData)
                 if (response.status === 200) {
                     const data = await response.data
                     set_img_data(data)
@@ -41,7 +41,7 @@ const ImageProvider = ({children}) => {
     }
 
   return (
-    <imageContext.Provider value={{image, get_image, image_response, img_data, pic_loading}}>
+    <imageContext.Provider value={{image, get_image, image_response, img_data, pic_loading, img_error, set_img_error,set_pic_loading }}>
       {children}
     </imageContext.Provider>
   )

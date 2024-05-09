@@ -6,7 +6,7 @@
     justify-content: space-between;
     align-items: flex-start;
     height: 100vh;
-    /* margin-bottom: ; */
+     /* margin-bottom: 3rem;  */
 }
 
 .chat_ai > .chat_box{
@@ -15,6 +15,8 @@
     margin: auto;
     background: white;
     border-radius: 16px;
+    overflow: scroll;
+    margin-bottom: 2rem;
 }
 
 
@@ -47,7 +49,7 @@
 }
 
  .chat_box > .messages > .user_message > .message {
-    width: 90%;
+    width: max-content;
     background-color: #f2f3f3;
     color: white;
     font-size: 12px;
@@ -56,6 +58,7 @@
     padding-left: 8px;
     font-weight: 400;
     font-size: 14px;
+    padding: 5px;
 
 }
 
@@ -69,6 +72,7 @@
     gap: 0.5rem;
     margin-top: 15px;
     margin-left: 3rem;
+    padding-right: 10px;
 }
 
  .chat_box > .messages > .ai_message > .circle {

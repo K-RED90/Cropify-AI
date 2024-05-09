@@ -19,12 +19,25 @@ const Farm_data = () =>
     error,
     load,
     setLoad,
-    nav
+    nav,
+    setError,
+  
   } = useContext(farm_data_context)
   
   //console.log(location)
 
   const navigate = useNavigate()
+
+
+  // if (error) {
+  //       const inter = setInterval(() => { 
+  //           setError([])
+  //           setLoad(false)
+  //       }, [ 2000 ])
+
+  //       return clearInterval(inter)
+        
+  //   }
 
   const navigation = ()=>{
    

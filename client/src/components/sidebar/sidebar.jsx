@@ -8,6 +8,8 @@ import { FaDatabase } from "react-icons/fa";
 
 
 const Sidebar = () => {
+  const url  = window.location.pathname
+
   return (
     <section className='sidebar_div'>
       <div className='logo'>
@@ -30,10 +32,29 @@ const Sidebar = () => {
         }
       </nav>
 
-      <section className='crop_added'>
+      {url !== "/dashboard/farm-data" && (<section className='crop_added'>
         
-      </section>
+      </section>)}
+      
+      {url === "/dashboard/farm-data" && (
+        <section className='weather_box'>
+          <div className='box'>
 
+          </div>
+          <div className='box'>
+
+          </div>
+          <div className='box'>
+
+          </div>
+          <div className='box'>
+
+          </div>
+          <div className='box'>
+
+          </div>
+        </section>
+        )}
       <section className='user'>
           <div className='user_circle'>N</div>
           <h1 className='name'>Nicolas</h1>
@@ -51,17 +72,18 @@ const data = [
     icon: <FaRocketchat className='icon'/>
   },
   {
-    id:1,
-    nav: "Add Farm Data",
-    link: "/farm-data",
-    icon: <FaDatabase className='icon'/>
-  },
-  {
     id:2,
     nav: "Image",
     link: "/image",
     icon: <AiTwotonePicture className='icon'/>
   }, 
+  {
+    id:1,
+    nav: "Add Farm Data",
+    link: "/farm-data",
+    icon: <FaDatabase className='icon'/>
+  },
+  
 ]
 
 export default Sidebar

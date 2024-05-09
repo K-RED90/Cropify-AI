@@ -2,15 +2,24 @@ import React from 'react'
 import DashboardLayout from '../../components/dashboardLayout/dashboardLayout'
 import logo from "../../assets/logo.png"
 import "./add-pic.css"
-import { Box, CircularProgress } from '@mui/material'
+import { Alert, Box, CircularProgress } from '@mui/material'
 import { useContext } from 'react'
 import { imageContext } from '../../service/image_context'
 import ReactMarkdown from 'react-markdown';
 
 const AddPicture = () => {
 
-const {image, get_image, image_response, img_data, pic_loading } = useContext(imageContext)
+const {image, get_image, image_response, img_data, pic_loading, img_error, set_img_error, set_pic_loading } = useContext(imageContext)
 
+    if (img_error) {
+        const inter = setInterval(() => { 
+            set_img_error(null)
+            set_pic_loading(false)
+        }, [ 2000 ])
+
+        return clearInterval(inter)
+        
+    }
 const open =()=>{
     document.getElementById("file").click()
 }
@@ -44,18 +53,18 @@ const open =()=>{
         </div>
         
         
-       {!img_data ? (
+       {/* {!img_data ? (
              <div style={{width:"100%", display:"flex", justifyContent:"center",  gap:"5px", alignItems:"center", marginTop:"2rem", marginLeft:"20px"}}>
                 <div style={{width: "30px", height:"30px"}}>
                     <img src={ logo} alt='logo' style={{width:"100%", height:"100%", objectFit:"fill"}} />
                 </div>
                 <small style={{fontSize:"14px"}}>Cropify-AI</small>
             </div>
-       ) : null}
+       ) : null} */}
         
         {!img_data ? (
              <div className='content'>
-                <h1>Empower your farming endeavors with our AI-powered solution</h1>
+                {/* <h1>Empower your farming endeavors with our AI-powered solution</h1> */}
                 <p>Simply provide images of your crops affected by pests or diseases,
                     and receive personalized recommendations instantly. Our ready-to-use
                     components are free forever, offering you a seamless experience in managing
@@ -64,7 +73,11 @@ const open =()=>{
                 </p>   
             </div>
         ) : null}
-    
+        {img_error && (
+             <div style={{marginTop:"1rem"}}>
+                <Alert  severity="error">{img_error}</Alert>
+             </div>
+        )}
           {
               pic_loading && (
                 <div className='loading'>
