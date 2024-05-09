@@ -1,0 +1,148 @@
+.farm_data{
+    width: 97%;
+    margin: auto;
+    height: 100vh;
+}
+
+.farm_data > .weather{
+    width: 100%;
+    height: 150px;
+    background-color: var(--sidebar-background);
+    margin-top: 1rem;
+    border-radius: 16px;
+}
+
+.data_field{
+    width: 90%;
+    height: 300px;
+    margin: auto;
+}
+
+.data_field > h1{
+    font-weight: 700;
+    font-size: 30px;
+    text-align: center;
+    color: var(--sidebar-background);
+}
+
+.data_field > form{
+    width: 100%;
+}
+
+.data_field > form > .crop{
+    width: 100%;
+}
+
+.data_field > form > .crop > lable{
+    font-weight: 700;
+    font-size: 60px;
+}
+
+.data_field > form > .crop > .crop_field{
+    width: 100%;
+    height: 50px;
+    
+}
+
+.data_field > form > .crop > .crop_field > input{
+    width: 100%;
+    height: 100%;
+    border: none;
+
+border: 1px solid var(--sidebar-background);
+border-radius: 8px;
+padding-left: 10px;
+font-size: 16px;
+}
+.soil{
+    width: 100;
+}
+.soil_container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.soil_field{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.soil_field >select{
+    width: 100%;
+    height: 50px;
+    border: none;
+    border: 1px solid var(--sidebar-background);
+    border-radius: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.pct_soil_moisture{
+    width: 100%;
+
+}
+
+.pct_soil_moisture_field{
+    width: 100%;
+    height: 50px;
+}
+.pct_soil_moisture_field > input{
+    width: 100%;
+    height: 45px;
+    border-radius: 8px;
+    border: none;
+    border: 1px solid var(--sidebar-background);
+    padding-left: 10px;
+    font-size: 16px;
+}
+
+.pests_and_diseases{
+width: 100%;
+}
+
+.pests_and_diseases > div{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pests_and_diseases > div > .field{
+    width: 95%;
+    height: 50px;
+    
+}
+
+.pests_and_diseases > div > .field > input{
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    border: none;
+    border: 1px solid var(--sidebar-background);
+    padding-left: 10px;
+    font-size: 16px;
+}
+
+.data_field > div{
+    width: 20%;
+    margin: auto;
+    margin-top: 2rem;
+
+
+}
+
+.data_field > div > button{
+    width: 100%;
+ padding: 10px;
+ background-color: var(--sidebar-background);
+ color: white;
+ border-radius: 10px;
+ font-size: 20px;
+cursor: pointer;
+}

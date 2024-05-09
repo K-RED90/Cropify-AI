@@ -59,8 +59,8 @@ class ResponseBody(BaseModel):
     additional_kwargs: Dict = {}
     response_metadata: Dict = {}
     type: str = "ai"
-    name: str = None
-    id: str = None
+    name: str | None = None
+    id: str | None  = None
     example: bool = False
     tool_calls: List = []
     invalid_tool_calls: List = []

@@ -76,8 +76,7 @@ class GetWeatherForecastByCityName(BaseOpenWeatherMap):
                 i += 3
             return forecast_data
         except Exception as e:
-            raise e
-        # f"Cannot find the weather forecast data for the city {city_name}. Check the city name."
+            return f"Cannot find the weather forecast data for the city {city_name}. Check the city name."
 
     async def _arun(self, *args: Any, **kwargs: Any):
         return await asyncify(self._run, cancellable=True)(*args, **kwargs)

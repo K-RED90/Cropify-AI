@@ -20,6 +20,6 @@ class GetCurrentLocation(BaseOpenWeatherMap):
         location = gem.reverse_geocode(lat, lon, limit=1)
         return location
     
-    def _arun(self, *args: Any, **kwargs: Any):
-        return asyncify(self._run, cancellable=True)(*args, **kwargs)
+    async def _arun(self, *args: Any, **kwargs: Any):
+        return await asyncify(self._run, cancellable=True)(*args, **kwargs)
         
