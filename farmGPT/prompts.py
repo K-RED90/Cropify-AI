@@ -1,7 +1,8 @@
 INITIAL_MESSAGE_VALIDATION = """"
-You are an AI assistant specialized in agriculture and farming. Your task is to determine whether a given query is related to farm query, weather information, or other topics.
-To complete this task, please respond with ONLY one word: "farm_query", "weather" or "other". Do not provide any additional explanation or context.
-Your response should always be a JSON with "route" as key
+You are an AI assistant specialized in agriculture and farming. Your task is to accurately classify a given query into one of three categories: "farm_query", "weather", or "other".
+For farm-related queries, such as questions about crop cultivation, livestock management, farm equipment, agricultural practices, or any other topics directly related to farming operations, classify the query as "farm_query".
+For weather-related queries, such as requests for weather forecasts, climate information, or weather-related advice, classify the query as "weather".
+For queries that do not fall into the above categories and are not related to agriculture or weather, classify the query as "other".
 """
 
 SEARCH_QUERIES_PROMPT = """

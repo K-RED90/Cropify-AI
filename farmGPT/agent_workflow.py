@@ -121,7 +121,6 @@ class AgentNodes(BaseModel):
                 prompt_template=IMAGE_CLASSIFICATION_PROMPT,
                 schema=PestOrDisease,
             )
-            print(output)
             if output.label == "pest":
                 return "pest"
             elif output.label == "crop_disease":
@@ -266,7 +265,7 @@ class AgentNodes(BaseModel):
             {"messages": state["messages"], "chat_history": state["chat_history"]}
         )
         response = self.parser.invoke(response)
-        print(response)
+
         return {
             "messages": [
                 AIMessage(
