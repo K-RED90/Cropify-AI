@@ -4,14 +4,12 @@ import re
 import time
 from glob import glob
 from pathlib import Path
-
 from dotenv import load_dotenv
 from farmGPT.agent_workflow import compile_graph
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langchain_groq.chat_models import ChatGroq
-from langsmith import Client
 from models import load_llm
 from typing import Literal
 
@@ -38,7 +36,6 @@ Actual Label: {actual_label}
 class ImageEvaluator:
     def __init__(self, image_dir="./example_images"):
         self.image_dir = image_dir
-        self.client = Client()
         self.model = load_llm(model="gpt-3.5-turbo-0125")
         self.chain = (
             compile_graph(llm=self.model)
