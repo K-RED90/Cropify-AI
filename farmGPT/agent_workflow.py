@@ -81,15 +81,18 @@ class AgentNodes(BaseModel):
         if vision_tool is None:
             try:
                 from langchain_anthropic.chat_models import ChatAnthropic
+                from langchain_openai.chat_models import ChatOpenAI
             except ImportError:
                 raise ImportError(
                     "Please install the anthropic plugin to use the default LLM. Run `pip install langchain-anthropic`"
                 )
-            vision_model = ChatAnthropic(
+            claude = ChatAnthropic(
                 model="claude-3-haiku-20240307", temperature=0.5
-            )  #TODO Change to gpt-4-turbo
+            )
+            main_vision_model = ChatOpenAI(model="gpt-4-vision-preview", temperature=0.4)
+            vision_model_with_fallback = main_vision_model.with_fallbacks([claude])
         
-        values["vision_tool"] = partial(pest_and_disease_tool, llm=vision_model)
+        values["vision_tool"] = partial(pest_and_disease_tool, llm=vision_model_with_fallback)
         values["llm"] = llm
         values["chain"] = partial(farm_chain, llm=llm)
         values["tool_executor"] = ToolExecutor(
