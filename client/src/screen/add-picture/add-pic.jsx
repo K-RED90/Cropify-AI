@@ -105,13 +105,16 @@ const open =()=>{
             
             {img_data.response_metadata.links && (
                 <div>
-                    <h2>Links</h2>
-                    {img_data.response_metadata.links.map((link, index)=>{
+                    <h2>Read more</h2>
+                    <ul>
+                       {img_data.response_metadata.links.map((link, index)=>{
                         return (
-                            <a href={link.url}>{ link.title}</a>
+                            <li><a href={link.url}>{ link.title}</a></li>
                             // <ReactMarkdown>{link }</ReactMarkdown>
                         )
-                    })}
+                    })} 
+                    </ul>
+                    
                 </div>
             )}
         </div>

@@ -67,12 +67,17 @@ const Chat = () => {
                        
                        <ReactMarkdown>{chat.ai}</ReactMarkdown>
                        {chat.links.length > 0 && <h3>Read more</h3>}
-                       {chat.links.map((link, index)=>{
-                         return (
-                           <a href={link.url}>{link.title}</a>
-                          // <ReactMarkdown key={index}>{link}</ReactMarkdown>
-                        )
-                       })}
+                       {chat.links && (
+                         <ul>
+                           {chat.links.map((link, index)=>{
+                            return (
+                              <li><a href={link.url}>{link.title}</a></li>
+                              // <ReactMarkdown key={index}>{link}</ReactMarkdown>
+                            )
+                          })}
+                         </ul>
+                       )}
+                       
                     </div>
                   </div>
                 </div>
