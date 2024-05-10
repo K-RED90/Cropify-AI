@@ -131,7 +131,7 @@ const Chat = () => {
             <section className='input_area'>
               <textarea
                 contenteditable="true"
-                placeholder="Provide a message related to farming and weather..."
+                placeholder="Type your farm or weather query here..."
                 className='input_field'
                 onChange={get_input_message}
               />
