@@ -11,6 +11,8 @@ const Farm_data_provider = ({children}) => {
         latitude: "",
         longitude:"",
     })
+  
+  const [location_name, set_location_name] = useState(null)
     
   const [ weather, setWeather ] = useState({})
   
@@ -80,6 +82,30 @@ const get_weather = useCallback(async()=>{
   console.log(weather)
 }
 
+const get_loaction_name = async()=>{
+ try {
+     const response = await axios.get(`http://localhost:5000/weather/current-location/${location.latitude}/${location.longitude}`)
+
+   if (response.status === 200) {
+     const data = await response.data.location[0].name
+     set_location_name(data)
+  }
+ } catch (error) {
+  console.log(error)
+ }
+}
+  
+  useEffect(()=>{
+    if (location.latitude) {
+      get_loaction_name()
+    }
+  }, [location])
+
+  if (location_name) {
+    console.log("location", location_name)
+  }
+  
+  
 const get_farm_data = useCallback((e) =>{
   set_farm_data({ ...farm_data, [ e.target.name ]: e.target.value })
   // set_fertilizer_control(null)
@@ -276,7 +302,8 @@ const get_farm_data = useCallback((e) =>{
       setLoad,
       nav,
       setError,
-      weather
+      weather,
+      location_name
       }}>
       {children}
     </farm_data_context.Provider>

@@ -135,7 +135,7 @@ const Chat = () => {
                 className='input_field'
                 onChange={get_input_message}
               />
-              <Button variant='contained' sx={{ width: "10%", height: "50px", padding: "10px", color: "white", backgroundColor: "#325757", borderRadius:"12px" }} onClick={()=>button_sent()}>
+              <Button variant='contained' sx={{ width: "10%", height: "40px", padding: "10px", color: "white", backgroundColor: "#325757", borderRadius:"12px" }} onClick={()=>button_sent()}>
                 <IoIosSend  className='send'/>
               </Button>
             </section>
