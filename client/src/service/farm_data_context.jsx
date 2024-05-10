@@ -60,7 +60,7 @@ useEffect(()=>{
   
 const get_weather = useCallback(async()=>{
   try {
-    const response = await axios.get(`http://localhost:5000/weather/weather-by-coordinates/${10}/${-3}`)
+    const response = await axios.get(`http://localhost:5000/weather/weather-by-coordinates/${location.latitude}/${location.longitude}`)
   if (response.status === 200){
     const data = response.data
     setWeather(data)
@@ -71,10 +71,10 @@ const get_weather = useCallback(async()=>{
 },[location.latitude, location.longitude])
   
   useEffect(() =>{
-    if(!location.latitude){
+    if(location.latitude){
       get_weather()
     }
-  },[])
+  },[location])
   
   if (weather) {
   console.log(weather)
