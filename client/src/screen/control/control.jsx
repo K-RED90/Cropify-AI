@@ -16,32 +16,32 @@ const Control = () => {
   } = useContext(farm_data_context)
   
    
-  const location = ()=>{
+//   const location = ()=>{
    
-        // Check if Geolocation is supported by the browser
-      if ("geolocation" in navigator) {
-        // Get current position
-        navigator.geolocation.getCurrentPosition(
-    function(position) {
-        // Success callback
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        console.log("lat:", latitude, "long:", longitude);
-    },
-    function(error) {
-        // Error callback
-        console.error("Error getting location:", error);
-    }
-);
-         console.log("ya")
-      } else {
-        // Geolocation is not supported by this browser
-        console.log("Geolocation is not supported by this browser.");
-      }
-  }
+//         // Check if Geolocation is supported by the browser
+//       if ("geolocation" in navigator) {
+//         // Get current position
+//         navigator.geolocation.getCurrentPosition(
+//     function(position) {
+//         // Success callback
+//         const latitude = position.coords.latitude;
+//         const longitude = position.coords.longitude;
+//         console.log("lat:", latitude, "long:", longitude);
+//     },
+//     function(error) {
+//         // Error callback
+//         console.error("Error getting location:", error);
+//     }
+// );
+//          console.log("ya")
+//       } else {
+//         // Geolocation is not supported by this browser
+//         console.log("Geolocation is not supported by this browser.");
+//       }
+//   }
   
 
-  location()
+//   location()
 
   if (fertilizer_control) {
     console.log("fert", fertilizer_control)
