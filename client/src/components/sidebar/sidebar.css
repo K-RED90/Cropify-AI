@@ -30,8 +30,7 @@
     transition: ease-in;
     border-radius: 8px;
     margin-bottom: 1rem;
-    height: 30px;
-
+    height: 40px;
 }
 
 .nav > .nav_container > div .chat {
@@ -51,17 +50,17 @@
     background-color: #427373;
 }
 
-.crop_added {
+/* .crop_added {
     margin-top: 2rem;
     width: 90%;
     overflow-x: hidden;
     height: 200px;
-}
+} */
 
-.crop_added > .crops {
+/* .crop_added > .crops {
     width: 100%;
     padding-left: 10px;
-}
+} */
 
 .crop_added > .crops > h1 {
     margin-bottom: 0.5rem;
@@ -79,7 +78,6 @@
     margin-top: 2rem;
     width: 90%;
     height: 40px;
-   
     background-color: #427373;
     border-radius: 12px;
     display: flex;
@@ -108,7 +106,6 @@
 
 .weather_box{
     width: 100%;
-    
     background-color: #427373;
-    margin-top: 13rem;
+    margin-top: 5rem;
 }
