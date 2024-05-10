@@ -328,7 +328,7 @@ class AgentNodes(BaseModel):
         if images_analysis is not None:
             images_response = json_to_markdown(images_analysis)
             response = AIMessage(
-                content=f"{images_response}\n\n**Control/Treatment**{response.content}",
+                content=f"{images_response}\n\n**Control/Treatment: **{response.content}",
                 response_metadata=response.response_metadata,
                 name="final",
             )
