@@ -101,3 +101,74 @@ By examining the image, several observations can be made regarding AgriScan imag
 2. **Challenging Cases**: Certain examples reveal the model's limitations or areas for improvement. For instance, the model incorrectly predicted "Cabbage Looper" for a "Cutworm" case and "Tomato Early Blight" for a "Late tomato blight" scenario. These misclassifications indicate potential challenges in distinguishing between visually similar conditions or subtle variations in disease progressions.
 
 3. **Fine-grained Differentiation**: The evaluation also reveals the model's capability to differentiate between closely related conditions. For example, it correctly distinguished between "Tomato Early Blight" and "tomato-late-blight," demonstrating its ability to capture nuanced visual cues and make accurate diagnoses.
+
+## Evaluation of AgroAssist Chatbot
+
+We evaluated the performance of our `AgroAssist` chatbot by using another instance of the GPT-3.5-turbo model to respond to the same queries that were previously answered by our AgroAssist. We then employed another instance of the GPT-3.5-turbo-0125 model to compare the answers provided by AgroAssist and the answers provided by the GPT-3.5-turbo-0125 model.
+
+All the answers given by our AgroAssist were marked as correct, except for the queries that required the model to call the weather API. Since we did not provide the GPT-3.5-turbo-0125 model with access to the weather API, it always responded that it does not have access to real-time weather data. This resulted in an accuracy score of `89%.`
+
+However, we manually evaluated the queries related to weather by comparing AgroAssist's responses with the responses from the weather API tool, and they were all correct. We are very excited about the idea of `augmenting a language model with real-time search engine results and a weather API` for seamless and accurate responses, and we are confident in the continued performance of our chatbot in solving agricultural problems.
+
+The runs and evaluations can be accessed at `Langsmith` with this link: ![Cropify AI-ATF Hackathon](https://smith.langchain.com/public/b69761e9-ef28-4f50-bb02-abc4df6f3ae5/d/compare?selectedSessions=68321f62-abc5-4002-ac8b-0eb21091c641&baseline=undefined&activeSession=68321f62-abc5-4002-ac8b-0eb21091c641)
+
+
+## 🛠️ Built With
+- **Language Models**: GPT-3.5-turbo-0125, gpt-4-vision-preview (Fallback to Claude-3-Haiku when error is encountered)
+- **APIs**: OpenWeatherMap, Tavily AI and DuckDuckGo
+- **Frameworks**: FastAPI, LangChain, LangGraph, LangSmith, Pydantic, React and more.
+- **Tools**: Docker, GitHub Actions, Postman, Swagger UI
+- **Languages**: Python, JavaScript, HTML, CSS
+- **Data Storage**: MongoDB
+- **Deployment**: Vercel
+
+## 🚀 Getting Started
+To get a local copy up and running follow these simple steps.
+1. Clone the repo
+   ```sh
+   git clone https://github.com/K-RED90/Cropify-AI.git
+    ```
+2. Install dependencies
+    ```sh
+    pip install -r requirements.txt
+    ```
+3. Set up your environment variables
+    ```sh
+    cp .env.example .env
+    ```
+    Edit the `.env` file and provide the necessary API keys and configuration settings.
+4. Run the Cropify application
+    ```sh
+    python run.py
+    ```
+5. Navigate to `client` folder
+    ```sh
+    cd client
+    ```
+6. Install dependencies
+    ```sh
+    npm install
+    ```
+7. Start the React app
+    ```sh
+    npm start
+    ```
+8. Open your browser and go to `http://localhost:3000/` to view the app
+
+## License
+Cropify AI is released under the [MIT License](https://opensource.org/licenses/MIT).
+
+## Resources and Tools
+- [OpenAI](https://www.openai.com/)
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [LangChain](https://langchain.com/)
+- [LangSmith](https://smith.langchain.com/)
+- [LangGraph](https://graph.langchain.com/)
+- [Tavily AI](https://tavily.com/)
+- [DuckDuckGo](https://duckduckgo.com/)
+- [OpenWeatherMap](https://openweathermap.org/)
+
+
+We thank the [African Technology Forum](https://www.linkedin.com/in/african-technology-forum-638bb02aa?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app) for organizing this hackathon and [OpenAI](https://www.openai.com/) for sponsoring it, enabling us to learn and explore innovative solutions for agricultural challenges.
+
+**🌾 Happy Farming! 🚜🌞**
