@@ -75,10 +75,15 @@
     padding-left: 40px;
     padding-right: 40px;
     overflow: scroll;
+    scrollbar-width: none;
     margin-top: 10px;
     box-shadow: 1px 0px 4px -1px var(--sidebar-background);
         -webkit-box-shadow: 1px 0px 4px -1px var(--sidebar-background);
         -moz-box-shadow: 1px 0px 4px -1px var(--sidebar-background);
+}
+
+.data_content::-webkit-scrollbar {
+    display: none;
 }
 
 strong{

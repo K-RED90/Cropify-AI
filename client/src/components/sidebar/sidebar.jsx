@@ -83,19 +83,19 @@ const Sidebar = () => {
 const data = [
   {
     id:0,
-    nav: "Agro Assist",
+    nav: "AgroAssist",
     link: "/",
     icon: <FaRocketchat className='icon'/>
   },
   {
     id:2,
-    nav: "Agri Scan",
+    nav: "AgriScan",
     link: "/image",
     icon: <AiTwotonePicture className='icon'/>
   }, 
   {
     id:1,
-    nav: "Agri Advisor",
+    nav: "AgriAdvisor",
     link: "/farm-data",
     icon: <FaDatabase className='icon'/>
   },
