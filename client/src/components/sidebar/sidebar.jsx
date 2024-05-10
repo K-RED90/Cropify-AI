@@ -40,13 +40,13 @@ const Sidebar = () => {
         }
       </nav>
 
-      {!url && (<section className='crop_added'>
+      {/* {!url && (<section className='crop_added'>
         
-      </section>)}
+     </section>)} */}
       
       {weather && (
          <section className='weather_box' style={{ paddingLeft: "1rem", fontSize: "14px", borderRadius: "8px",  paddingTop:"5px", paddingBottom:"5px", paddingRight:"10px"}}>
-          <h3>Weather Data</h3>
+          <h3>Weather</h3>
           <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
             <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"flex-start",  lineHeight:"1px", width:"60%"}}>
               <SiInstatus style={{fontSize:"25px"}}/>
@@ -75,8 +75,6 @@ const Sidebar = () => {
             </div>
             <p style={{ width: "40%" }}>{ weather.pressure}</p>
           </div>
-          
-        
         </section>
        )}
         
