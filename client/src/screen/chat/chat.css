@@ -16,9 +16,13 @@
     background: white;
     border-radius: 16px;
     overflow: scroll;
+    scrollbar-width: none;
     margin-bottom: 2rem;
 }
 
+.chat_ai > .chat_box::-webkit-scrollbar {
+    display: none;
+}
 
 .chat_box > .messages {
     width: 95%;
