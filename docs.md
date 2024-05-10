@@ -16,7 +16,7 @@ By analyzing your farm data, such as crop types, soil conditions, and real-time 
 ###  1. Agent Workflow Breakdown: AgriScan and AgroAssist
 The agent goes through a lot of steps to provide the best possible assistance to the user. The agent can handle both text and image inputs, providing a comprehensive solution for various user queries. The workflow is divided into two main sections: text input and image input.
 
-![Agent Workflow](https://github.com/K-RED90/Cropify-AI/blob/main/image/Agent%20Workflow.png)
+![Agent Workflow](https://github.com/K-RED90/Cropify-AI/blob/main/images/Agent%20Workflow.png)
 
 The workflow operates differently depending on the user input type: text or image.
 
@@ -28,8 +28,8 @@ The workflow operates differently depending on the user input type: text or imag
     - **Search Query Generation:** If classified as a farm query, `GPT-3.5-turbo-0125` again generates 1-3 relevant search queries to answer the farmer's question.
     - **Search Engine:** The generated queries are then routed to the `search_engine` node for execution. 
     - **Answer Writing:** Retrieved search results are sent to the `answer_writer` node, which utilizes them to formulate an answer for the farmer.
-    - **Answer Evaluation:** The `answer_evaluator` node assesses the completeness of the answer.
-      - **Incomplete Answer:** If the answer is deemed incomplete, the evaluator generates feedback and sends it, along with the initial answer, to the `specialist` node. The specialist (e.g., Agriculture specialist) refines the answer based on the feedback.
+    - **Answer Evaluation:** The `evaluator` node assesses the completeness of the answer.
+      - **Incomplete Answer:** If the answer is deemed incomplete, the evaluator generates feedback and sends it, along with the initial answer, to the `specialist` node. The specialist (Agriculture specialist) refines the answer based on the feedback.
       - **Complete Answer:** If the answer is complete, it bypasses the specialist and proceeds to the `final` node.
     - **Final Formatting:**  The `final` node formats the answer for a polished presentation before delivery.
 
