@@ -23,8 +23,6 @@
 .chat_box > .messages {
     width: 95%;
     margin: auto;
-    overflow: scroll;
-
 }
 
 .chat_box > .messages > .user_message {

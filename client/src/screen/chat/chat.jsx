@@ -8,6 +8,7 @@ import { FaRegArrowAltCircleUp } from "react-icons/fa";
 import ReactMarkdown from 'react-markdown';
 import { useContext } from 'react'
 import { chatContext } from '../../service/chat_context'
+import { FaArrowDownLong } from "react-icons/fa6";
 const Chat = () => {
   const { get_screen_message, get_chat_ID , chat, get_input_message, button_sent, chatload, chatError, setChatError, setChatLoad} = useContext(chatContext)
   
@@ -80,7 +81,13 @@ const Chat = () => {
         </div>
         )}
        
-     
+        {!chatload && chat.length > 2 && (
+          <div style={{lineHeight:"2px", fontSize:"12px", width:"80%", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", margin:"auto"}}>
+            <FaArrowDownLong />
+            <p>Scroll</p>
+          </div>
+        )}
+
         {
           chatload && (
                       <div style={{display:"flex", justifyContent:"center", alignItems:"center", width:"100%"}}>

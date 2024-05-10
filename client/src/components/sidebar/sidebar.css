@@ -56,7 +56,6 @@
     width: 90%;
     overflow-x: hidden;
     height: 200px;
-    overflow: scroll;
 }
 
 .crop_added > .crops {
@@ -80,7 +79,7 @@
     margin-top: 2rem;
     width: 90%;
     height: 40px;
-    overflow: scroll;
+   
     background-color: #427373;
     border-radius: 12px;
     display: flex;
