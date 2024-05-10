@@ -5,8 +5,8 @@ import json
 
 
 class PestsAndDiseasesSchema(BaseModel):
-    pests: str | None = None
-    diseases: str | None = None
+    pests: str | None = "No pests"
+    diseases: str | None = "No diseases"
 
     @classmethod
     def from_dict(cls, data: dict):
