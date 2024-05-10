@@ -78,7 +78,8 @@ Overall, AgriAdvisor combines the power of learned knowledge, efficient data ana
 ## AgriScan Evaluation
 
 ![AgriScan Evaluation](https://github.com/K-RED90/Cropify-AI/blob/d6b8af0efe3222b01b554b47e8b85021af158aaf/images/evaluation.png)
-[Evaluation Codes](https://github.com/K-RED90/Cropify-AI/blob/main/evaluator.ipynb)
+[Evaluation Codes can be found here](https://github.com/K-RED90/Cropify-AI/blob/main/evaluator.ipynb)
+
 The image above showcases a comprehensive evaluation of Cropify AI's image analysis capabilities. It presents a diverse set of images depicting various agricultural scenarios, each accompanied by the model's prediction and the actual label.
 
 ## Evaluation Methodology
