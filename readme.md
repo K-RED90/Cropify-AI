@@ -168,7 +168,7 @@ Cropify AI is released under the [MIT License](https://opensource.org/licenses/M
 - [DuckDuckGo](https://duckduckgo.com/)
 - [OpenWeatherMap](https://openweathermap.org/)
 
-
+## 🤗 Acknowledgement
 We thank the [African Technology Forum](https://www.linkedin.com/in/african-technology-forum-638bb02aa?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app) for organizing this hackathon and [OpenAI](https://www.openai.com/) for sponsoring it, enabling us to learn and explore innovative solutions for agricultural challenges.
 
 **🌾 Happy Farming! 🚜🌞**
