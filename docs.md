@@ -74,3 +74,30 @@ The `Chain of Thought (COT)` prompting method works as follows:
 By employing the `Chain of Thought (COT)` prompting method, AgriAdvisor can provide more transparent and interpretable recommendations. The agent's reasoning process is laid out in a structured manner, allowing users to understand how the AI arrived at its recommendations and the factors it considered.
 
 Overall, AgriAdvisor combines the power of learned knowledge, efficient data analysis, and the `Chain of Thought (COT)` prompting method to deliver accurate and transparent farm management recommendations, helping farmers maximize their yields and achieve sustainable agricultural practices.
+
+## AgriScan Evaluation
+
+![AgriScan Evaluation](https://github.com/K-RED90/Cropify-AI/blob/d6b8af0efe3222b01b554b47e8b85021af158aaf/images/evaluation.png)
+The image above showcases a comprehensive evaluation of Cropify AI's image analysis capabilities. It presents a diverse set of images depicting various agricultural scenarios, each accompanied by the model's prediction and the actual label.
+
+## Evaluation Methodology
+
+The evaluation process involves comparing the model's predictions with the actual annotated images. The accuracy score `(77.27%)` represents the overall performance of the image analysis model across the given set of examples.
+
+To ensure a robust evaluation, the following considerations are taken into account:
+
+1. **Label Variations**: The evaluation accounts for variations in label phrasing and terminology. For instance, "Apple Scab" and "applescab leaf" are treated as equivalent labels, ensuring that minor linguistic differences do not impact the accuracy assessment.
+
+2. **Alternative Names and Synonyms**: Agricultural terminology often includes multiple synonyms or alternative names for the same condition or organism. The evaluation process considers these variations, recognizing that "Corn Smut" and "corn-fungus" refer to the same disease.
+
+3. **Visual Diversity**: The image set covers a wide range of visual representations, including different crop types, disease manifestations, pest appearances, and environmental conditions. This diversity ensures that the model's performance is evaluated across a broad spectrum of real-world scenarios encountered in agricultural settings.
+
+### Analysis and Insights
+
+By examining the image, several observations can be made regarding AgriScan image analysis capabilities:
+
+1. **Correct Predictions**: The model demonstrates accurate predictions for various conditions, such as "Aphid Infestation," "Corn Smut," "Monarch Caterpillar," "Japanese Beetle," and "Gray mold (Botrytis cinerea)." These correct identifications highlight the model's ability to recognize and classify different diseases, pests, and insects effectively.
+
+2. **Challenging Cases**: Certain examples reveal the model's limitations or areas for improvement. For instance, the model incorrectly predicted "Cabbage Looper" for a "Cutworm" case and "Tomato Early Blight" for a "Late tomato blight" scenario. These misclassifications indicate potential challenges in distinguishing between visually similar conditions or subtle variations in disease progressions.
+
+3. **Fine-grained Differentiation**: The evaluation also reveals the model's capability to differentiate between closely related conditions. For example, it correctly distinguished between "Tomato Early Blight" and "tomato-late-blight," demonstrating its ability to capture nuanced visual cues and make accurate diagnoses.
