@@ -2,7 +2,7 @@
 
 Cropify is a cutting-edge AI-powered platform designed to revolutionize modern farming practices. By leveraging advanced technologies such as GPT-4-turbo and the OpenWeatherMap API, Cropify provides farmers with tailored recommendations and insights to optimize crop yield, minimize losses, and enhance overall farm productivity.
 
-![Cropify Banner](https://github.com/K-RED90/Cropify-AI/blob/main/image/Designer.jpeg)
+![Cropify Banner](https://github.com/K-RED90/Cropify-AI/blob/main/images/Designer.jpeg)
 
 ## Features
 
@@ -110,7 +110,7 @@ For detailed information on each endpoint's parameters, responses, and usage exa
 
 The following diagram illustrates the high-level workflow and decision process implemented by Cropify's AI agent:
 
-![Workflow Diagram](https://github.com/K-RED90/Cropify-AI/blob/main/image/graph.png)
+![Workflow Diagram](https://github.com/K-RED90/Cropify-AI/blob/main/images/graph.png)
 
 This workflow handles scenarios such as crop disease and pest identification, generating relevant recommendations, and providing appropriate responses or fallback options when necessary.
 
