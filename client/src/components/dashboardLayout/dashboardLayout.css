@@ -3,6 +3,10 @@
     display: flex;
     justify-content: flex-start;
     position: relative;
+    scrollbar-width: none;
+}
+.layout::-webkit-scrollbar {
+    display: none;
 }
 
 .sidebar{
