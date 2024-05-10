@@ -60,7 +60,7 @@ useEffect(()=>{
   
 const get_weather = useCallback(async()=>{
   try {
-    const response = await axios.get(`http://localhost:5000/weather/weather-by-coordinates/${location.latitude}/${location.longitude}`)
+    const response = await axios.get(`http://localhost:5000/weather/weather-by-coordinates/${10}/${-3}`)
   if (response.status === 200){
     const data = response.data
     setWeather(data)
@@ -71,10 +71,10 @@ const get_weather = useCallback(async()=>{
 },[location.latitude, location.longitude])
   
   useEffect(() =>{
-    if(location.latitude){
+    if(!location.latitude){
       get_weather()
     }
-  },[location.latitude])
+  },[])
   
   if (weather) {
   console.log(weather)
@@ -86,6 +86,7 @@ const get_farm_data = useCallback((e) =>{
   // set_weed_control(null)
   // set_pests_and_diseases_control(null)
   // soil_and_crop_management_response(null)
+  setNav(false)
   console.log(farm_data)
 }, [farm_data])
 

@@ -5,6 +5,8 @@ import "./sidebar.css"
 import { FaRocketchat } from "react-icons/fa";
 import { AiTwotonePicture } from "react-icons/ai";
 import { FaDatabase } from "react-icons/fa";
+import { WiHumidity } from "react-icons/wi";
+import { CiTempHigh } from "react-icons/ci";
 
 
 const Sidebar = () => {
@@ -37,22 +39,36 @@ const Sidebar = () => {
       </section>)}
       
       {url === "/dashboard/farm-data" && (
-        <section className='weather_box'>
-          <div className='box'>
-
+        <section className='weather_box' style={{paddingLeft:"2rem", fontSize:"14px" }}>
+          <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"center",  lineHeight:"1px"}}>
+              <WiHumidity style={{fontSize:"25px"}}/>
+              <p>Humidity</p>
+            </div>
+            <p>75%</p>
           </div>
-          <div className='box'>
-
+          <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"center",  lineHeight:"1px"}}>
+              <CiTempHigh style={{fontSize:"25px"}}/>
+              <p>Temperature</p>
+            </div>
+            <p>75%</p>
           </div>
-          <div className='box'>
-
+          <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"center",  lineHeight:"1px"}}>
+              <WiHumidity style={{fontSize:"25px"}}/>
+              <p>Humidity</p>
+            </div>
+            <p>75%</p>
           </div>
-          <div className='box'>
-
+          <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"center",  lineHeight:"1px"}}>
+              <WiHumidity style={{fontSize:"25px"}}/>
+              <p>Humidity</p>
+            </div>
+            <p>75%</p>
           </div>
-          <div className='box'>
-
-          </div>
+          
         </section>
         )}
       <section className='user'>

@@ -108,7 +108,8 @@ const open =()=>{
                     <h2>Links</h2>
                     {img_data.response_metadata.links.map((link, index)=>{
                         return (
-                            <ReactMarkdown>{link }</ReactMarkdown>
+                            <a href={link.url}>{ link.title}</a>
+                            // <ReactMarkdown>{link }</ReactMarkdown>
                         )
                     })}
                 </div>

@@ -68,7 +68,8 @@ const Chat = () => {
                        {chat.links.length > 0 && <h3>Read more</h3>}
                        {chat.links.map((link, index)=>{
                          return (
-                          <ReactMarkdown key={index}>{link}</ReactMarkdown>
+                           <a href={link.url}>{link.title}</a>
+                          // <ReactMarkdown key={index}>{link}</ReactMarkdown>
                         )
                        })}
                     </div>
