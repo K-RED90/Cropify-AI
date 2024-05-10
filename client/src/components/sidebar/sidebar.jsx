@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import logo from "../../assets/logo.png"
 import {Link} from "react-router-dom"
 import "./sidebar.css"
@@ -7,11 +7,17 @@ import { AiTwotonePicture } from "react-icons/ai";
 import { FaDatabase } from "react-icons/fa";
 import { WiHumidity } from "react-icons/wi";
 import { CiTempHigh } from "react-icons/ci";
+import { MdWindPower } from "react-icons/md";
+import { GiPressureCooker } from "react-icons/gi";
+import { SiInstatus } from "react-icons/si";
+import { farm_data_context } from '../../service/farm_data_context';
+
 
 
 const Sidebar = () => {
   const url  = window.location.pathname
-
+  const { weather } = useContext(farm_data_context)
+  
   return (
     <section className='sidebar_div'>
       <div className='logo'>
@@ -34,43 +40,46 @@ const Sidebar = () => {
         }
       </nav>
 
-      {url !== "/dashboard/farm-data" && (<section className='crop_added'>
+      {!url && (<section className='crop_added'>
         
       </section>)}
       
-      {url === "/dashboard/farm-data" && (
-        <section className='weather_box' style={{paddingLeft:"2rem", fontSize:"14px" }}>
+      {weather && (
+         <section className='weather_box' style={{ paddingLeft: "1rem", fontSize: "14px", borderRadius: "8px",  paddingTop:"5px", paddingBottom:"5px", paddingRight:"10px"}}>
+          <h3>Weather Data</h3>
           <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
-            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"center",  lineHeight:"1px"}}>
-              <WiHumidity style={{fontSize:"25px"}}/>
-              <p>Humidity</p>
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"flex-start",  lineHeight:"1px", width:"60%"}}>
+              <SiInstatus style={{fontSize:"25px"}}/>
+              <p>Status</p>
             </div>
-            <p>75%</p>
+            <p style={{ width: "40%" }}>{ weather.status}</p>
           </div>
           <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
-            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"center",  lineHeight:"1px"}}>
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"flex-start",  lineHeight:"1px", width:"60%"}}>
               <CiTempHigh style={{fontSize:"25px"}}/>
               <p>Temperature</p>
             </div>
-            <p>75%</p>
+            <p style={{ width: "40%" }}>{ weather.temperature}</p>
           </div>
           <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
-            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"center",  lineHeight:"1px"}}>
-              <WiHumidity style={{fontSize:"25px"}}/>
-              <p>Humidity</p>
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"flex-start",  lineHeight:"1px", width:"60%"}}>
+              < MdWindPower style={{fontSize:"25px"}}/>
+              <p>Wind</p>
             </div>
-            <p>75%</p>
+            <p style={{ width: "40%" }}>{weather?.wind?.split(",")[0] }</p>
           </div>
           <div style={{display:"flex", lineHeight:"1px", gap:"4rem", justifyContent:"flex-start", alignItems:"center"}} className='box'>
-            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"center",  lineHeight:"1px"}}>
-              <WiHumidity style={{fontSize:"25px"}}/>
-              <p>Humidity</p>
+            <div style={{display:"flex", flexDirection:"column", justifyContent:"flex-start", alignItems:"flex-start",  lineHeight:"1px", width:"60%"}}>
+              < GiPressureCooker style={{fontSize:"25px"}}/>
+              <p>Pressure</p>
             </div>
-            <p>75%</p>
+            <p style={{ width: "40%" }}>{ weather.pressure}</p>
           </div>
           
+        
         </section>
-        )}
+       )}
+        
       <section className='user'>
           <div className='user_circle'>N</div>
           <h1 className='name'>Nicolas</h1>

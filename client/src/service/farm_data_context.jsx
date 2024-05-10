@@ -276,7 +276,7 @@ const get_farm_data = useCallback((e) =>{
       setLoad,
       nav,
       setError,
-
+      weather
       }}>
       {children}
     </farm_data_context.Provider>
