@@ -124,6 +124,8 @@ The runs and evaluations can be accessed at `Langsmith` with this link: [Cropify
 - **Data Storage**: MongoDB
 - **Deployment**: Vercel
 
+## Demo Video
+[![Cropify AI Demo Video]()](https://drive.google.com/file/d/1Dtpewpa3F40mVLb-6Npb4RpKBSOAyMS9/view?usp=sharing)
 ## 🚀 Getting Started
 
 ### Running on Vercel
