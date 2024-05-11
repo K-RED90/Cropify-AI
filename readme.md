@@ -125,10 +125,7 @@ The runs and evaluations can be accessed at `Langsmith` with this link: [Cropify
 - **Deployment**: Vercel
 
 ## Demo Video
-<video width="640" height="480" controls>
-  <source src="https://drive.google.com/file/d/1Dtpewpa3F40mVLb-6Npb4RpKBSOAyMS9/view?usp=sharing" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[![Alternate Text]({https://github.com/K-RED90/Cropify-AI/blob/d6b8af0efe3222b01b554b47e8b85021af158aaf/images/logo.jpeg})]({https://drive.google.com/file/d/1Dtpewpa3F40mVLb-6Npb4RpKBSOAyMS9/view?usp=sharing} "Link Title")
 
 ## 🚀 Getting Started
 
