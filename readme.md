@@ -129,11 +129,6 @@ The runs and evaluations can be accessed at `Langsmith` with this link: [Cropify
 
 ## 🚀 Getting Started
 
-### Running on Vercel
-Cropify AI is deployed on Vercel. You can access the live application [here](https://cropy-competition.vercel.app).
-
-**📝 NOTE: Allow your location access when prompted so that we can fetch the weather data at your location for our "AgriAdvisor's analysis.**
-
 ### Run Locally
 To get a local copy up and running follow these simple steps.
 1. Clone the repo
