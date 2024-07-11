@@ -36,7 +36,7 @@ Actual Label: {actual_label}
 class ImageEvaluator:
     def __init__(self, image_dir="./example_images"):
         self.image_dir = image_dir
-        self.model = load_llm(model="gpt-3.5-turbo-0125")
+        self.model = load_llm(model="gpt-4o")
         self.chain = (
             compile_graph(llm=self.model)
             | (lambda x: x.content)
